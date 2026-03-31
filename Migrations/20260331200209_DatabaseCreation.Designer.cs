@@ -11,8 +11,8 @@ using Unstorekle.Data;
 namespace Unstore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260331024911_InitialCreation")]
-    partial class InitialCreation
+    [Migration("20260331200209_DatabaseCreation")]
+    partial class DatabaseCreation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

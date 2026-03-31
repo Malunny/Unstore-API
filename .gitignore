@@ -7,6 +7,7 @@ app.db-shm
 app.db-wal
 appsettings.json
 appsettings.Development.json
+.idea/
 
 # Default ignored files
 /shelf/

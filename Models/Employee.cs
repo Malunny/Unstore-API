@@ -11,4 +11,24 @@ public class Employee : BaseModel
     public bool Active { get; set; }
 
     public ICollection<Service> Services { get; set; } = new List<Service>();
+
+    public Employee()
+    {
+        
+    }
+    public Employee(string name, string contactNumber, string email,
+        Position position, DateTime startedAt, ICollection<Service> services, bool active = true)
+    {
+        Name = name;
+        ContactNumber = contactNumber;
+        Email = email;
+        
+        Position = position;
+        PositionId = position.Id;
+        
+        StartedAt = startedAt;
+        Active = active;
+        
+        Services = services;
+    }
 }

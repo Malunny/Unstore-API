@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Unstore.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreation : Migration
+    public partial class DatabaseCreation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
