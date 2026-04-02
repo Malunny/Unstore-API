@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Unstore.Extensions;
+using Unstore.ViewModels;
 using Unstorekle.Data;
 using Unstorekle.Models;
 
@@ -8,20 +10,30 @@ public partial class ClientController
 {
     [HttpPost("/v1/clients/post")]
     public async Task<IActionResult> PostAsync
-    ([FromBody] Client client, [FromServices] AppDbContext context)
+    ([FromBody] EditorClientViewModel client, [FromServices] AppDbContext context)
     {
-        await context.Clients.AddAsync(client);
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<EditorClientViewModel>(client, errors: ModelState.GetErrors()));
+
+        await context.Clients.AddAsync(client.MapModel());
         await context.SaveChangesAsync();
-        return Created($"v1/clients/{client.Id}",client);
+        return Created($"v1/clients/post", new ResultViewModel<EditorClientViewModel>(client));
     }
     
     [HttpPost("/v1/clients/post-range")]
     public async Task<IActionResult> PostRangeAsync
-        ([FromBody] IEnumerable<Client> clients, [FromServices] AppDbContext context)
+        ([FromBody] IEnumerable<EditorClientViewModel> clients, [FromServices] AppDbContext context)
     {
-        await context.Clients.AddRangeAsync(clients);
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<IEnumerable<EditorClientViewModel>>(clients, ModelState.GetErrors()));
+
+        await context.Clients.AddRangeAsync(clients.MapModel());
         await context.SaveChangesAsync();
 
-        return Created($"v1/clients/{clients.Count()}-quantity", clients);
+        return Created
+            (
+                $"v1/clients/{clients.Count()}-quantity",
+                new ResultViewModel<IEnumerable<EditorClientViewModel>>(clients)
+            );
     }
 }

@@ -8,6 +8,8 @@ app.db-wal
 appsettings.json
 appsettings.Development.json
 .idea/
+# Local database file
+app.db
 
 # Default ignored files
 /shelf/
