@@ -43,6 +43,20 @@ namespace Unstore.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Roles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tools",
                 columns: table => new
                 {
@@ -90,6 +104,30 @@ namespace Unstore.Migrations
                         name: "FK_Employees_Positions_PositionId",
                         column: x => x.PositionId,
                         principalTable: "Positions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Username = table.Column<string>(type: "nvarchar(20)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(150)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(30)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    RoleId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -221,6 +259,17 @@ namespace Unstore.Migrations
                 name: "IX_ToolToolTags_ToolTagId",
                 table: "ToolToolTags",
                 column: "ToolTagId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_RoleId",
+                table: "Users",
+                column: "RoleId");
         }
 
         /// <inheritdoc />
@@ -236,6 +285,9 @@ namespace Unstore.Migrations
                 name: "ToolToolTags");
 
             migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
                 name: "Services");
 
             migrationBuilder.DropTable(
@@ -243,6 +295,9 @@ namespace Unstore.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tools");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Clients");

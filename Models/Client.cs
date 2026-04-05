@@ -1,4 +1,4 @@
-namespace Unstorekle.Models;
+namespace Unstore.Models;
 
 public class Client : BaseModel
 {

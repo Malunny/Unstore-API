@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
-using Unstorekle.Models;
+using Unstore.Models;
 
-namespace Unstorekle.Data;
+namespace Unstore.Data;
 
 public class AppDbContext : DbContext
 {
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<User> Users { get; set; }
     public DbSet<Client> Clients { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Product> Products { get; set; }
@@ -23,28 +25,68 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Client
         
+        // Role
+        modelBuilder.Entity<Role>()
+            .ToTable("Roles");
+        modelBuilder.Entity<Role>()
+            .HasKey(x => x.Id);
+        modelBuilder.Entity<Role>()
+            .Property(x => x.Name)
+            .IsRequired()
+            .HasColumnType("nvarchar(100)");
+        modelBuilder.Entity<Role>()
+            .Property(x => x.Description)
+            .HasColumnType("nvarchar(500)")
+            .IsRequired();
+        
+        // User
+        modelBuilder.Entity<User>()
+            .ToTable("Users");
+        modelBuilder.Entity<User>()
+            .Property(x => x.Username)
+            .IsRequired()
+            .HasColumnType("nvarchar(20)");
+        modelBuilder.Entity<User>()
+            .Property(x => x.Password)
+            .IsRequired()
+            .HasColumnType("nvarchar(100)");
+        modelBuilder.Entity<User>()
+            .Property(x => x.Email)
+            .IsRequired()
+            .HasColumnType("nvarchar(150)");
+        modelBuilder.Entity<User>()
+            .HasIndex(x => x.Email)
+            .IsUnique();
+        modelBuilder.Entity<User>()
+            .Property(x => x.FirstName)
+            .IsRequired()
+            .HasColumnType("nvarchar(30)");
+        modelBuilder.Entity<User>()
+            .Property(x => x.LastName)
+            .IsRequired()
+            .HasColumnType("nvarchar(100)");
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Role)
+            .WithMany(r => r.Users)
+            .HasForeignKey(u => u.RoleId);
+        
+        // Client
         modelBuilder.Entity<Client>()
             .ToTable("Clients");
-
         modelBuilder.Entity<Client>().HasKey(x => x.Id);
-        
         modelBuilder.Entity<Client>()
             .Property(x => x.Name)
             .IsRequired()
             .HasColumnType("nvarchar(150)");
-        
         modelBuilder.Entity<Client>()
             .Property(x => x.Email)
             .IsRequired()
             .HasColumnType("nvarchar(150)");
-        
         modelBuilder.Entity<Client>()
             .Property(x => x.Address)
             .IsRequired()
             .HasColumnType("nvarchar(150)");
-
         modelBuilder.Entity<Client>()
             .Property(x => x.ContactNumber)
             .IsRequired()

@@ -1,36 +1,66 @@
 using Microsoft.AspNetCore.Mvc;
-using Unstorekle.Data;
-using Unstorekle.Models;
+using Unstore.Mapper;
+using Unstore.Data;
+using Unstore.Models;
+using Unstore.Services;
+using Unstore;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 
-using var context = new AppDbContext();
+/*
+using AppDbContext db = new();
+DbDataSeeder.Seed(db);
 
-var builder = WebApplication.CreateBuilder(args);
-/*  BEING USED FOR TESTING PURPOSES
-builder.Services.AddCors(options =>
+var admin = db.Roles.First();
+
+if (!await db.Users.Include(x => x.Role).AnyAsync(x => x.Role == admin))
 {
-    options.AddPolicy("AllowAll", policy =>
+    db.Users.Add(new User() 
     {
-        policy.AllowAnyOrigin()  
-            .AllowAnyHeader()  
-            .AllowAnyMethod(); 
+        FirstName = "Adm",
+        LastName = "account",
+        Username = "Administration",
+        Email = "adm@mail.com",
+        Password = "admin123",
+        Role = admin,
+        RoleId = admin.Id
     });
-});
+    db.SaveChanges();
+}
 */
+var builder = WebApplication.CreateBuilder(args);
+var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);
+builder.Services.AddAuthentication(options =>
+{
+   options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; 
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+
+// ------ SERVICES
+
+builder.Services.AddTransient<TokenService>();
+builder.Services.AddDbContext<AppDbContext>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services
     .AddControllers()
-    // ALSO BEING USED FOR TESTING PURPOSES
-    //.AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true)
-    .ConfigureApiBehaviorOptions(options =>
-    {
-        options.SuppressModelStateInvalidFilter = true;
-    });;
-builder.Services.AddDbContext<AppDbContext>();
+    .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true)
+    .ConfigureApiBehaviorOptions(options => {options.SuppressModelStateInvalidFilter = true;});
 
 var app = builder.Build();
 
-// REMOVE COMMENTS IF TESTING
-// app.UseCors("AllowAll");
-// app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

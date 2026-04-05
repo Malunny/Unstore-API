@@ -1,21 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Unstore.DTO;
+using Unstore.DTOs;
 using Unstore.Extensions;
-using Unstore.ViewModels;
-using Unstorekle.Data;
+using Unstore.Data;
+using Unstore.Models;
 
 namespace Unstore.Controllers;
 
 public partial class ClientController : ControllerBase
 {
-    [HttpGet("/v1/clients/get-all")]
+    [HttpGet("/v1/clients/get/{skip:int}/{take:int}")]
     public async Task<IActionResult> GetAllAsync
-        ([FromServices] AppDbContext context)
+        ([FromServices] AppDbContext context,
+        [FromRoute] int skip,
+        [FromRoute] int take)
     {
-        var clients = await context.Clients.MapEditor().ToListAsync();
-        Console.WriteLine("GET ALL - CLIENTS EXECUTED");
-        
-        return Ok(new ResultViewModel<IEnumerable<EditorClientViewModel>>(clients));    
+        var clients = _mapper.Map<IEnumerable<ClientReadDto>>(
+        await context.Clients
+        .Skip(skip)
+        .Take(take)
+        .ToListAsync());
+        return Ok(new ResultDto<IEnumerable<ClientReadDto>>(clients));    
     }
     
     [HttpGet("/v1/clients/get/{id:int}")]
@@ -23,14 +29,7 @@ public partial class ClientController : ControllerBase
             ([FromRoute] int id,
             [FromServices] AppDbContext context)
     {
-        var client = await context.Clients.Where(client => client.Id == id)
-                                          .MapEditor()
-                                          .FirstOrDefaultAsync();
-        Console.WriteLine("GET BY ID - CLIENTS EXECUTED");
-        
-        if (client == null)
-            return NotFound(new ResultViewModel<object>([$"Client with id {id} not found"]));
-
-        return Ok(new ResultViewModel<EditorClientViewModel>(client));    
+        var client = await context.Clients.FirstOrDefaultAsync(x => x.Id == id);
+        return Ok(new ResultDto<ClientReadDto>(_mapper.Map<Client, ClientReadDto>(client!)));    
     }
 }

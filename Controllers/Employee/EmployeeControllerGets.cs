@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Unstorekle.Data;
+using Unstore.Data;
 
 namespace Unstore.Controllers.Employee;
 

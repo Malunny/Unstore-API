@@ -3,7 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Unstorekle.Data;
+using Unstore.Data;
 
 #nullable disable
 
@@ -47,7 +47,7 @@ namespace Unstore.Migrations
                     b.ToTable("ToolToolTags");
                 });
 
-            modelBuilder.Entity("Unstorekle.Models.Client", b =>
+            modelBuilder.Entity("Unstore.Models.Client", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -74,7 +74,7 @@ namespace Unstore.Migrations
                     b.ToTable("Clients", (string)null);
                 });
 
-            modelBuilder.Entity("Unstorekle.Models.Employee", b =>
+            modelBuilder.Entity("Unstore.Models.Employee", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -112,7 +112,7 @@ namespace Unstore.Migrations
                     b.ToTable("Employees", (string)null);
                 });
 
-            modelBuilder.Entity("Unstorekle.Models.Position", b =>
+            modelBuilder.Entity("Unstore.Models.Position", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -134,7 +134,7 @@ namespace Unstore.Migrations
                     b.ToTable("Positions", (string)null);
                 });
 
-            modelBuilder.Entity("Unstorekle.Models.Product", b =>
+            modelBuilder.Entity("Unstore.Models.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -165,7 +165,26 @@ namespace Unstore.Migrations
                     b.ToTable("Products", (string)null);
                 });
 
-            modelBuilder.Entity("Unstorekle.Models.Service", b =>
+            modelBuilder.Entity("Unstore.Models.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles", (string)null);
+                });
+
+            modelBuilder.Entity("Unstore.Models.Service", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -194,7 +213,7 @@ namespace Unstore.Migrations
                     b.ToTable("Services", (string)null);
                 });
 
-            modelBuilder.Entity("Unstorekle.Models.Tool", b =>
+            modelBuilder.Entity("Unstore.Models.Tool", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -213,7 +232,7 @@ namespace Unstore.Migrations
                     b.ToTable("Tools", (string)null);
                 });
 
-            modelBuilder.Entity("Unstorekle.Models.ToolTag", b =>
+            modelBuilder.Entity("Unstore.Models.ToolTag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -232,15 +251,54 @@ namespace Unstore.Migrations
                     b.ToTable("ToolTags", (string)null);
                 });
 
+            modelBuilder.Entity("Unstore.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("Users", (string)null);
+                });
+
             modelBuilder.Entity("ServiceTool", b =>
                 {
-                    b.HasOne("Unstorekle.Models.Service", null)
+                    b.HasOne("Unstore.Models.Service", null)
                         .WithMany()
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Unstorekle.Models.Tool", null)
+                    b.HasOne("Unstore.Models.Tool", null)
                         .WithMany()
                         .HasForeignKey("ToolsId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -249,22 +307,22 @@ namespace Unstore.Migrations
 
             modelBuilder.Entity("ToolToolTags", b =>
                 {
-                    b.HasOne("Unstorekle.Models.Tool", null)
+                    b.HasOne("Unstore.Models.Tool", null)
                         .WithMany()
                         .HasForeignKey("ToolId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Unstorekle.Models.ToolTag", null)
+                    b.HasOne("Unstore.Models.ToolTag", null)
                         .WithMany()
                         .HasForeignKey("ToolTagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Unstorekle.Models.Employee", b =>
+            modelBuilder.Entity("Unstore.Models.Employee", b =>
                 {
-                    b.HasOne("Unstorekle.Models.Position", "Position")
+                    b.HasOne("Unstore.Models.Position", "Position")
                         .WithMany("Employees")
                         .HasForeignKey("PositionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -273,22 +331,22 @@ namespace Unstore.Migrations
                     b.Navigation("Position");
                 });
 
-            modelBuilder.Entity("Unstorekle.Models.Product", b =>
+            modelBuilder.Entity("Unstore.Models.Product", b =>
                 {
-                    b.HasOne("Unstorekle.Models.Service", null)
+                    b.HasOne("Unstore.Models.Service", null)
                         .WithMany("Products")
                         .HasForeignKey("ServiceId");
                 });
 
-            modelBuilder.Entity("Unstorekle.Models.Service", b =>
+            modelBuilder.Entity("Unstore.Models.Service", b =>
                 {
-                    b.HasOne("Unstorekle.Models.Client", "Client")
+                    b.HasOne("Unstore.Models.Client", "Client")
                         .WithMany("Services")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Unstorekle.Models.Employee", "Employee")
+                    b.HasOne("Unstore.Models.Employee", "Employee")
                         .WithMany("Services")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -299,22 +357,38 @@ namespace Unstore.Migrations
                     b.Navigation("Employee");
                 });
 
-            modelBuilder.Entity("Unstorekle.Models.Client", b =>
+            modelBuilder.Entity("Unstore.Models.User", b =>
+                {
+                    b.HasOne("Unstore.Models.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("Unstore.Models.Client", b =>
                 {
                     b.Navigation("Services");
                 });
 
-            modelBuilder.Entity("Unstorekle.Models.Employee", b =>
+            modelBuilder.Entity("Unstore.Models.Employee", b =>
                 {
                     b.Navigation("Services");
                 });
 
-            modelBuilder.Entity("Unstorekle.Models.Position", b =>
+            modelBuilder.Entity("Unstore.Models.Position", b =>
                 {
                     b.Navigation("Employees");
                 });
 
-            modelBuilder.Entity("Unstorekle.Models.Service", b =>
+            modelBuilder.Entity("Unstore.Models.Role", b =>
+                {
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Unstore.Models.Service", b =>
                 {
                     b.Navigation("Products");
                 });
