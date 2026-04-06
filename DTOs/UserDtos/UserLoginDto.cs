@@ -2,11 +2,8 @@
 
 namespace Unstore.DTOs;
 
-public record UserDto
+public record UserLoginDto
 {
-    [Required]
-    [MinLength(3)]
-    public string Username { get; set; }
     [Required]
     [MinLength(6)]
     public string Password { get; set; }

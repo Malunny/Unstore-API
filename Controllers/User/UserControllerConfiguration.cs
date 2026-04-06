@@ -7,10 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Unstore.Controllers;
-
-[ApiController]
-//[Authorize(Roles = "Admin, Manager")]
-public partial class ClientController : ControllerBase
+[Authorize(Roles = "Admin")]
+public partial class UserController(IMapper mapper) : ControllerBase
 {
-
+    private IMapper _mapper = mapper;
 }

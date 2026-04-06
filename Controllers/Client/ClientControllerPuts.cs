@@ -6,6 +6,7 @@ using Unstore.DTOs;
 using Unstore.Extensions;
 using Unstore.Data;
 using Unstore.Models;
+using Unstore.Services;
 
 namespace Unstore.Controllers;
 
@@ -15,25 +16,22 @@ public partial class ClientController
     [HttpPut("/v1/clients/put/")]
     public async Task<IActionResult> PutByIdAsync
         ([FromBody] ClientUpdateDto client,
-        [FromServices] AppDbContext context)
+        [FromServices] AppDbContext context,
+        [FromServices] ClientService service)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(new ResultDto<ClientUpdateDto>(client,errors: ModelState.GetErrors()));
-        
-        var clientTrack = await context.Clients.FirstOrDefaultAsync(x => x.Id == client.Id);
-        var map = _mapper.Map(client, clientTrack);
+        var result = await service.Update(ModelState, client);
+        if (result.IsBadResult())
+            return BadRequest(result);
 
-        await context.SaveChangesAsync();
-        
-        return Ok(new ResultDto<ClientUpdateDto>(client));
+        return Ok(result);
     }
-    
+    /*
     [HttpPut("/v1/clients/put-range")]
     public async Task<IActionResult> PutByIdAsync
         ([FromBody] IEnumerable<ClientUpdateDto> clientsUpdateDtos, [FromServices] AppDbContext context)
     {
         if (!ModelState.IsValid)
-            return BadRequest(new ResultDto<IEnumerable<ClientUpdateDto>>(clientsUpdateDtos, ModelState.GetErrors()));
+            return BadRequest(ServiceResult<IEnumerable<ClientUpdateDto>>.Failure(clientsUpdateDtos, ModelState.GetErrors()));
 
         int[] clientsIds = clientsUpdateDtos.Select(x => x.Id).ToArray();
 
@@ -43,6 +41,7 @@ public partial class ClientController
             _mapper.Map(client, trackedClients.FirstOrDefault(x => x.Id == client.Id));
         
         await context.SaveChangesAsync();
-        return Ok(new ResultDto<IEnumerable<ClientUpdateDto>>(clientsUpdateDtos));
+        return Ok(ServiceResult<IEnumerable<ClientUpdateDto>>.Success(clientsUpdateDtos));
     }
+    */
 }

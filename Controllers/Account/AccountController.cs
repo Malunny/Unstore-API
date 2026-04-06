@@ -17,17 +17,17 @@ public partial class AccountController(IMapper mapper) : ControllerBase
     [HttpPost("/v1/users/login")]
     public IActionResult Login(
         [FromServices] TokenService tokenService,
-        [FromBody] UserDto user,
+        [FromBody] UserLoginDto user,
         [FromServices] AppDbContext context)
     {
         if (!ModelState.IsValid)
-            return BadRequest(new ResultDto<UserDto>(user, ModelState.GetErrors()));
+            return BadRequest(ServiceResult<UserLoginDto>.MultipleResults(user, ModelState.GetErrors()));
         var userTracked = context.Users.Include(u => u.Role).FirstOrDefault(x => x.Email == user.Email);
 
         if (userTracked == null)
-            return Unauthorized(new ResultDto<UserDto>(user, error: ErrorCode.NotFound.ToResultErrorMessage()));
+            return Unauthorized(ServiceResult<UserLoginDto>.Failure(OperationStatus.NotFound));
         if (userTracked.Password != user.Password)
-            return Unauthorized(new ResultDto<UserDto>(user, error: ErrorCode.InvalidCredentials.ToResultErrorMessage()));
+            return Unauthorized(ServiceResult<UserLoginDto>.Failure(OperationStatus.InvalidCredentials));
 
         var token = tokenService.GenerateToken(userTracked);
         return Ok(token);
@@ -39,9 +39,9 @@ public partial class AccountController(IMapper mapper) : ControllerBase
         [FromServices] AppDbContext context)
     {
         if (!ModelState.IsValid)
-            return BadRequest(new ResultDto<UserCreationDto>(user, ModelState.GetErrors()));
+            return BadRequest(ServiceResult<UserCreationDto>.Failure(user, ModelState.GetErrors()));
         if (await context.Users.AnyAsync(x => x.Email == user.Email || x.Username == user.Username))
-            return BadRequest(new ResultDto<UserCreationDto>(user, error: ErrorCode.UserAlreadyExists.ToResultErrorMessage()));
+            return BadRequest(ServiceResult<UserCreationDto>.Failure(OperationStatus.UserAlreadyExists.ToResultStatusMessage()));
         
         var userMapped = _mapper.Map<Models.User>(user);
         var role = await context.Roles.FirstAsync(x => x.Id == 3);
@@ -52,7 +52,7 @@ public partial class AccountController(IMapper mapper) : ControllerBase
         await context.Users.AddAsync(userMapped);
         await context.SaveChangesAsync();
 
-        return Ok(new ResultDto<UserCreationDto>(user));
+        return Ok(ServiceResult<UserCreationDto>.Success(user, OperationStatus.Created));
     }
 
     [Authorize(Roles = "Admin")]
@@ -60,7 +60,7 @@ public partial class AccountController(IMapper mapper) : ControllerBase
     public async Task<IActionResult> GetAllUser([FromServices] AppDbContext context)
     {
         var usersTracked = await context.Users.Include(x => x.Role).ToListAsync();
-        var users = _mapper.Map<IEnumerable<User>, IEnumerable<UserGetDto>>(usersTracked);
-        return Ok(new ResultDto<IEnumerable<UserGetDto>>(users));
+        var users = _mapper.Map<IEnumerable<User>, IEnumerable<UserCreationDto>>(usersTracked);
+        return Ok(ServiceResult<IEnumerable<UserCreationDto>>.Success(users));
     }
 }

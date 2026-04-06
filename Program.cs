@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 
-/*
+
 using AppDbContext db = new();
 DbDataSeeder.Seed(db);
 
 var admin = db.Roles.First();
-
+/*
 if (!await db.Users.Include(x => x.Role).AnyAsync(x => x.Role == admin))
 {
     db.Users.Add(new User() 
@@ -50,6 +50,7 @@ builder.Services.AddAuthentication(options =>
 // ------ SERVICES
 
 builder.Services.AddTransient<TokenService>();
+builder.Services.AddScoped<ClientService>();
 builder.Services.AddDbContext<AppDbContext>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services

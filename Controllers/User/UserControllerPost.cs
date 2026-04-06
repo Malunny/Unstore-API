@@ -16,15 +16,15 @@ public partial class UserController
         [FromServices] AppDbContext context
     )
     {
-        System.Console.WriteLine($"{user.Email} - {user.Password}");
-        System.Console.WriteLine($"{user.FirstName} - {user.LastName}");
         if (!ModelState.IsValid)
-            return BadRequest(new ResultDto<UserCreationDto>(user, ModelState.GetErrors()));
+            return BadRequest(ServiceResult<UserCreationDto>.Failure(ModelState.GetErrors()));
         
         var userMapped = _mapper.Map<Models.User>(user);
         var role = context.Roles.First(x => x.Id == 3);
+
         userMapped.RoleId = role.Id;
         userMapped.Role = role;
+
         context.Users.Add(userMapped);
         context.SaveChanges();
         return Created("/v1/users/", user.Email);

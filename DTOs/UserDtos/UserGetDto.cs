@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Unstore.DTOs
 {
-    public class UserGetDto
+    public class UserReadDto
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

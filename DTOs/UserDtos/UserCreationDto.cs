@@ -7,12 +7,9 @@ using System.Threading.Tasks;
 namespace Unstore.DTOs;
 public record UserCreationDto
 {
-    [Required(ErrorMessage = "First name is required")]
-    [MinLength(2, ErrorMessage = "First name must be at least 2 characters long")]
+    [Required(ErrorMessage = "Name is required")]
+    [MinLength(2, ErrorMessage = "Name must be at least 3 characters long")]
     public string FirstName { get; set; }
-    [Required(ErrorMessage = "Last name is required")]
-    [MinLength(2, ErrorMessage = "Last name must be at least 2 characters long")]
-    public string LastName { get; set; }
     [Required(ErrorMessage = "Email is required")]
     [EmailAddress(ErrorMessage = "Invalid email format")]
     public string Email { get; set; }
