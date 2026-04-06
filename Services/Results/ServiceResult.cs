@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Unstore.Services
 {
-    public class ServiceResult<T> where T : class
+    public readonly record struct ServiceResult<T> where T : class
     {
         public T? Data { get; set; }
         public IEnumerable<ResultStatusMessage> StatusMessage { get; set; }= [OperationStatus.Ok.ToResultStatusMessage()];
 
-        public ServiceResult() {}
+        private ServiceResult() {}
 
         public static ServiceResult<T> Success(T data, OperationStatus status = OperationStatus.Ok)
             => new ServiceResult<T>() { Data = data, StatusMessage = [status.ToResultStatusMessage()]};
