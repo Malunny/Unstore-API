@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Unstore.Services
 {
-    public class ServiceResult<T> where T : class
+    public class ServiceResult<T> 
     {
         public T? Data { get; set; }
         public IEnumerable<ResultStatusMessage> StatusMessage { get; set; }= [OperationStatus.Ok.ToResultStatusMessage()];
@@ -23,14 +23,14 @@ namespace Unstore.Services
              => new ServiceResult<T>() { Data = data, StatusMessage = statusMessage};
 
         public static ServiceResult<T> Failure(OperationStatus code) 
-            => new ServiceResult<T>() { Data = null, StatusMessage = [code.ToResultStatusMessage()]};
+            => new ServiceResult<T>() { StatusMessage = [code.ToResultStatusMessage()]};
         public static ServiceResult<T> Failure(T? data, IEnumerable<ResultStatusMessage> statusMessage)
              => new ServiceResult<T>() { Data = data, StatusMessage = statusMessage};
 
         public static ServiceResult<T> Failure(ResultStatusMessage statusMessage)
-             => new ServiceResult<T>() { Data = null, StatusMessage = [statusMessage]};
+             => new ServiceResult<T>() { StatusMessage = [statusMessage]};
 
         public static ServiceResult<T> Failure(IEnumerable<ResultStatusMessage> statusMessage)
-             => new ServiceResult<T>() {Data = null, StatusMessage = statusMessage};
+             => new ServiceResult<T>() { StatusMessage = statusMessage};
     }
 }

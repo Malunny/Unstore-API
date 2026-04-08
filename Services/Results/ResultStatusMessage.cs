@@ -10,7 +10,7 @@ public class ResultStatusMessage(OperationStatus statusCode, string errorMessage
 
 public static class ServiceResultExtensions
 {
-    public static bool IsBadResult<T>(this ServiceResult<T> serviceResult) where T : class
+    public static bool IsBadResult<T>(this ServiceResult<T> serviceResult)
     {
         if (serviceResult.StatusMessage.Any(sm => (int)sm.StatusCode < 2000 && (int)sm.StatusCode >= 1000))
             return true;

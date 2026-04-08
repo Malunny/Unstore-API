@@ -28,7 +28,7 @@ namespace Unstore.Services
             mapper = map;
             this.context = context;
         }
-        public async Task<ServiceResult<ClientCreateDto>> Create(ModelStateDictionary modelstate, ClientCreateDto client)
+        public async Task<ServiceResult<ClientCreateDto>> CreateAsync(ModelStateDictionary modelstate, ClientCreateDto client)
         {
             if (!modelstate.IsValid)
                 return ServiceResult<ClientCreateDto>.Failure(modelstate.GetErrors());
@@ -41,7 +41,7 @@ namespace Unstore.Services
             return ServiceResult<ClientCreateDto>.Success(client);
         }
 
-        public async Task<ServiceResult<IEnumerable<ClientCreateDto>>> CreateRange(ModelStateDictionary modelstate, IEnumerable<ClientCreateDto> clients)
+        public async Task<ServiceResult<IEnumerable<ClientCreateDto>>> CreateRangeAsync(ModelStateDictionary modelstate, IEnumerable<ClientCreateDto> clients)
         {
             if (!modelstate.IsValid)
                 return ServiceResult<IEnumerable<ClientCreateDto>>.Failure(modelstate.GetErrors());
@@ -54,7 +54,7 @@ namespace Unstore.Services
             return ServiceResult<IEnumerable<ClientCreateDto>>.Success(clients);
         }
 
-        public async Task<ServiceResult<ClientUpdateDto>> Update(ModelStateDictionary modelstate, ClientUpdateDto client)
+        public async Task<ServiceResult<ClientUpdateDto>> UpdateAsync(ModelStateDictionary modelstate, ClientUpdateDto client)
         {
             if (!modelstate.IsValid)
                 return ServiceResult<ClientUpdateDto>.Failure(modelstate.GetErrors());
@@ -62,20 +62,28 @@ namespace Unstore.Services
             var clientTrack = await context.Clients.FirstOrDefaultAsync(x => x.Id == client.Id);
 
             var mapped = mapper.Map<ClientUpdateDto, Client>(client, clientTrack);
-            System.Console.WriteLine($"""
-
-                {mapped.Name}
-                {mapped.Address}
-                {mapped.Email}
-                {mapped.ContactNumber}
-            """);
             var returnedClient = mapper.Map(mapped, new ClientUpdateDto());
             await context.SaveChangesAsync();
 
             return ServiceResult<ClientUpdateDto>.Success(returnedClient, OperationStatus.Updated);
         }
+        public async Task<ServiceResult<IEnumerable<ClientUpdateDto>>> UpdateRangeAsync
+            (ModelStateDictionary modelstate, IEnumerable<ClientUpdateDto> clients)
+        {
+            if (!modelstate.IsValid)
+                return ServiceResult<IEnumerable<ClientUpdateDto>>.Failure(modelstate.GetErrors());
+            
+            List<int> idClients = new(clients.Select(c => c.Id));
+            var clientTrack = await context.Clients.Where(x => idClients.Contains(x.Id)).ToListAsync();
 
-        public async Task<ServiceResult<ClientReadDto>> GetById(int id)
+            var mapped = mapper.Map<IEnumerable<ClientUpdateDto>, IEnumerable<Client>>(clients, clientTrack);
+            var returnedClients = mapper.Map(mapped, new List<ClientUpdateDto>());
+            await context.SaveChangesAsync();
+
+            return ServiceResult<IEnumerable<ClientUpdateDto>>.Success(returnedClients, OperationStatus.Updated);
+        }
+
+        public async Task<ServiceResult<ClientReadDto>> GetByIdAsync(int id)
         {
             var client = await context.Clients.FirstOrDefaultAsync(cli => cli.Id == id);
 
@@ -86,7 +94,7 @@ namespace Unstore.Services
                 .Success(mapper.Map<Client,ClientReadDto>(client), OperationStatus.Ok);
         }
 
-        public async Task<ServiceResult<IEnumerable<ClientReadDto?>>> GetByIds(IEnumerable<int> ids)
+        public async Task<ServiceResult<IEnumerable<ClientReadDto?>>> GetByIdsAsync(IEnumerable<int> ids)
         {
             Dictionary<int,Client> clientsWithId = await context.Clients.Where(cli => ids.Contains(cli.Id)).ToDictionaryAsync(c => c.Id);
             List<ClientReadDto?> clients = new();
@@ -116,6 +124,27 @@ namespace Unstore.Services
                 clientsMapped.Add(mapper.Map<Client, ClientReadDto>(client));
             var result = ServiceResult<IEnumerable<ClientReadDto>>.Success(clientsMapped);
             return result;
+        }
+
+        public async Task<ServiceResult<object?>> RemoveAsync(int id)
+        {
+            Client? client = await context.Clients.FirstOrDefaultAsync(cli => cli.Id == id);
+            if (client is null)
+                return ServiceResult<object?>.Failure(OperationStatus.NotFound);
+            context.Clients.Remove(client);
+            await context.SaveChangesAsync();
+            return ServiceResult<object?>.Success(null);
+        }
+        public async Task<ServiceResult<object?>> RemoveRangeAsync(IEnumerable<int> ids)
+        {
+            IEnumerable<Client> clients = await context.Clients.Where(cli => ids.Contains(cli.Id)).ToListAsync();
+            if (!clients.Any())
+                return ServiceResult<object?>.Failure(OperationStatus.NotFound);
+            if (clients.Count() < ids.Count())
+                return ServiceResult<object?>.Failure(OperationStatus.NotFound);
+            context.Clients.RemoveRange(clients);
+            await context.SaveChangesAsync();
+            return ServiceResult<object?>.Success(null);
         }
     }
 }
