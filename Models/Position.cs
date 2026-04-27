@@ -8,10 +8,7 @@ public class Position : BaseModel
 
     public ICollection<Employee> Employees { get; set; } = new List<Employee>();
 
-    public Position()
-    {
-        
-    }
+    public Position() {}
 
     public Position(string name, string description, decimal wage, ICollection<Employee> employees)
     {

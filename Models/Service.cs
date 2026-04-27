@@ -10,6 +10,7 @@ public class Service : BaseModel
     public ICollection<Tool> Tools { get; set; } = new List<Tool>();
     public string Details { get; set; }
     public string Address { get; set; }
+    public decimal Cost { get; set; }
 
     public Service()
     {

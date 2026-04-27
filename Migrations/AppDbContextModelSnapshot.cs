@@ -45,6 +45,48 @@ namespace Unstore.Migrations
                     b.HasIndex("ToolTagId");
 
                     b.ToTable("ToolToolTags");
+
+                    b.HasData(
+                        new
+                        {
+                            ToolId = 1,
+                            ToolTagId = 1
+                        },
+                        new
+                        {
+                            ToolId = 5,
+                            ToolTagId = 1
+                        },
+                        new
+                        {
+                            ToolId = 2,
+                            ToolTagId = 2
+                        },
+                        new
+                        {
+                            ToolId = 3,
+                            ToolTagId = 2
+                        },
+                        new
+                        {
+                            ToolId = 10,
+                            ToolTagId = 2
+                        },
+                        new
+                        {
+                            ToolId = 6,
+                            ToolTagId = 3
+                        },
+                        new
+                        {
+                            ToolId = 8,
+                            ToolTagId = 3
+                        },
+                        new
+                        {
+                            ToolId = 9,
+                            ToolTagId = 3
+                        });
                 });
 
             modelBuilder.Entity("Unstore.Models.Client", b =>
@@ -72,6 +114,88 @@ namespace Unstore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Clients", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Address = "Av. Paulista, 1000",
+                            ContactNumber = "1130001000",
+                            Email = "contato@solar.com",
+                            Name = "Condomínio Solar"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Address = "Rua das Flores, 50",
+                            ContactNumber = "1130002000",
+                            Email = "adm@harmonia.com",
+                            Name = "Residencial Harmonia"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Address = "Rua Saúde, 200",
+                            ContactNumber = "1130003000",
+                            Email = "atendimento@bemestar.com",
+                            Name = "Clínica Médica Bem Estar"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Address = "Praça da Sé, 10",
+                            ContactNumber = "1130004000",
+                            Email = "pao@central.com",
+                            Name = "Padaria Central"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Address = "Alameda Santos, 450",
+                            ContactNumber = "1130005000",
+                            Email = "legal@advx.com",
+                            Name = "Escritório Advocacia X"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Address = "Rua B, 123",
+                            ContactNumber = "11988887777",
+                            Email = "joao@gmail.com",
+                            Name = "João da Silva"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Address = "Av. Brasil, 99",
+                            ContactNumber = "11977776666",
+                            Email = "maria@yahoo.com",
+                            Name = "Maria Oliveira"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Address = "Rua Gastronomia, 15",
+                            ContactNumber = "1130008000",
+                            Email = "gerencia@sabor.com",
+                            Name = "Restaurante Sabor"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Address = "Rua Educação, 88",
+                            ContactNumber = "1130009000",
+                            Email = "diretoria@prime.com",
+                            Name = "Escola Infantil Prime"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Address = "Rua do Suor, 500",
+                            ContactNumber = "1130010000",
+                            Email = "treino@fit.com",
+                            Name = "Academia Fit"
+                        });
                 });
 
             modelBuilder.Entity("Unstore.Models.Employee", b =>
@@ -110,6 +234,58 @@ namespace Unstore.Migrations
                     b.HasIndex("PositionId");
 
                     b.ToTable("Employees", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Active = true,
+                            ContactNumber = "11911111111",
+                            Email = "roberto@unstore.com",
+                            Name = "Roberto Alves",
+                            PositionId = 1,
+                            StartedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Active = true,
+                            ContactNumber = "11922222222",
+                            Email = "felipe@unstore.com",
+                            Name = "Felipe Souza",
+                            PositionId = 2,
+                            StartedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Active = true,
+                            ContactNumber = "11933333333",
+                            Email = "mariana@unstore.com",
+                            Name = "Mariana Costa",
+                            PositionId = 3,
+                            StartedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Active = true,
+                            ContactNumber = "11944444444",
+                            Email = "lucas@unstore.com",
+                            Name = "Lucas Mendes",
+                            PositionId = 1,
+                            StartedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Active = false,
+                            ContactNumber = "11955555555",
+                            Email = "beatriz@unstore.com",
+                            Name = "Beatriz Rocha",
+                            PositionId = 2,
+                            StartedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("Unstore.Models.Position", b =>
@@ -132,6 +308,29 @@ namespace Unstore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Positions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Especialista em persianas motorizadas",
+                            Name = "Instalador Sênior",
+                            Wage = 3500.00m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Auxílio em furações e transporte",
+                            Name = "Ajudante de Instalação",
+                            Wage = 1800.00m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Atendimento interno e orçamentos",
+                            Name = "Consultor de Vendas",
+                            Wage = 2200.00m
+                        });
                 });
 
             modelBuilder.Entity("Unstore.Models.Product", b =>
@@ -163,6 +362,32 @@ namespace Unstore.Migrations
                     b.HasIndex("ServiceId");
 
                     b.ToTable("Products", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Tecido 100% poliéster",
+                            ImageUrl = "url.com",
+                            Name = "Persiana Rolo Blackout",
+                            Value = 150.00m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Tecido sob medida",
+                            ImageUrl = "url.com",
+                            Name = "Cortina de Linho",
+                            Value = 280.00m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Somfy 220v",
+                            ImageUrl = "url.com",
+                            Name = "Motor para Persiana",
+                            Value = 450.00m
+                        });
                 });
 
             modelBuilder.Entity("Unstore.Models.Role", b =>
@@ -182,6 +407,26 @@ namespace Unstore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Administrador total",
+                            Name = "ADM"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Acesso a vendas e clientes",
+                            Name = "Vendedor"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Acesso a ordens de serviço e ferramentas",
+                            Name = "Instalador"
+                        });
                 });
 
             modelBuilder.Entity("Unstore.Models.Service", b =>
@@ -197,6 +442,9 @@ namespace Unstore.Migrations
                     b.Property<int>("ClientId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<decimal>("Cost")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Details")
                         .IsRequired()
                         .HasColumnType("nvarchar(500)");
@@ -211,6 +459,17 @@ namespace Unstore.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.ToTable("Services", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Address = "Av. Paulista, 1000 - Sala 5",
+                            ClientId = 1,
+                            Cost = 0m,
+                            Details = "Instalação de 4 persianas blackout motorizadas",
+                            EmployeeId = 1
+                        });
                 });
 
             modelBuilder.Entity("Unstore.Models.Tool", b =>
@@ -230,6 +489,68 @@ namespace Unstore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tools", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Furadeira Makita 18V",
+                            Name = "Furadeira de Impacto"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Medidor Bosch 50m",
+                            Name = "Trena Laser"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Nível de alumínio 60cm",
+                            Name = "Nível de Bolha"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Escada 7 degraus",
+                            Name = "Escada Extensível"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "DeWalt com controle de torque",
+                            Name = "Parafusadeira"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Description = "Jogo de chaves Phillips e Fenda",
+                            Name = "Maleta de Chaves"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Description = "Para limpeza pós-furação",
+                            Name = "Aspirador Portátil"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Description = "Para ajuste de suportes",
+                            Name = "Martelo de Borracha"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Description = "Corte de sobras de tecido",
+                            Name = "Estilete Profissional"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Description = "Para evitar furar canos",
+                            Name = "Detector de Metais/Vigas"
+                        });
                 });
 
             modelBuilder.Entity("Unstore.Models.ToolTag", b =>
@@ -249,6 +570,26 @@ namespace Unstore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ToolTags", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Ferramentas que usam bateria ou cabo",
+                            TagName = "Elétrica"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Precisão e medidas",
+                            TagName = "Medição"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Ferramentas de mão",
+                            TagName = "Manual"
+                        });
                 });
 
             modelBuilder.Entity("Unstore.Models.User", b =>
@@ -261,17 +602,14 @@ namespace Unstore.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(120)");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(400)")
+                        .HasColumnName("PasswordHash");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("INTEGER");
@@ -286,6 +624,9 @@ namespace Unstore.Migrations
                         .IsUnique();
 
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users", (string)null);
                 });

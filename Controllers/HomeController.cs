@@ -1,10 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Unstore.Controllers;
 
-[ApiController]
-public class HomeController : ControllerBase
+public partial class HomeController : ControllerBase
 {
+    [AllowAnonymous]
     [HttpGet("/")]
     public IActionResult Get()
     {

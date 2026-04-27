@@ -13,20 +13,28 @@ public partial class ClientController : ControllerBase
 {
     [HttpGet("/v1/clients/{skip:int}/{take:int}")]
     public async Task<IActionResult> GetSkipTake
-        ([FromServices] ClientService service,
+        ([FromServices] ClientService clientService,
         [FromRoute] int skip,
         [FromRoute] int take)
     {
-        var clients = await service.GetRangeAsync(skip, take);
-        return Ok(clients.Data);
+        var result = await clientService.GetRangeAsync(skip, take);
+
+        if (result.IsBadResult())
+            return BadRequest(result.StatusMessage);
+
+        return Ok(result.Data);
     }
     
     [HttpGet("/v1/clients/{id:int}")]
     public async Task<IActionResult> GetByIdAsync
             ([FromRoute] int id,
-            [FromServices] ClientService service)
+            [FromServices] ClientService clientService)
     {
-        var client = await service.GetByIdAsync(id);
-        return Ok(client.Data);
+        var result = await clientService.GetByIdAsync(id);
+
+        if (result.IsBadResult())
+            return BadRequest(result.StatusMessage);
+
+        return Ok(result.Data);
     }
 }

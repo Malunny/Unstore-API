@@ -15,10 +15,10 @@ public partial class ClientController
     
     [HttpPut("/v1/clients/")]
     public async Task<IActionResult> PutByIdAsync
-        ([FromBody] ClientUpdateDto client,
-        [FromServices] ClientService service)
+        ([FromBody] ClientUpdateDto clientUpdateDto,
+        [FromServices] ClientService clientService)
     {
-        var result = await service.UpdateAsync(ModelState, client);
+        var result = await clientService.UpdateAsync(ModelState, clientUpdateDto);
 
         if (result.IsBadResult())
             return BadRequest(result.StatusMessage);
@@ -27,10 +27,10 @@ public partial class ClientController
     }
     [HttpPut("/v1/clients/many")]
     public async Task<IActionResult> PutByIdAsync
-        ([FromBody] IEnumerable<ClientUpdateDto> clientsUpdateDtos, 
-        [FromServices] ClientService service)
+        ([FromBody] IEnumerable<ClientUpdateDto> clientUpdateDtos, 
+        [FromServices] ClientService clientService)
     {
-        var result = await service.UpdateRangeAsync(ModelState, clientsUpdateDtos);
+        var result = await clientService.UpdateRangeAsync(ModelState, clientUpdateDtos);
         if (result.IsBadResult())
             return BadRequest(result.StatusMessage);
         return Ok(result.Data);

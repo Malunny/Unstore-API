@@ -15,11 +15,11 @@ public partial class ClientController
     
     [HttpPost("/v1/clients/")]
     public async Task<IActionResult> PostAsync
-    ([FromBody] ClientCreateDto client,
+    ([FromBody] ClientCreateDto clientCreateDto,
     [FromServices] AppDbContext context,
-    [FromServices] ClientService service)
+    [FromServices] ClientService clientService)
     {
-        var result = await service.CreateAsync(ModelState, client);
+        var result = await clientService.CreateAsync(ModelState, clientCreateDto);
         if (result.IsBadResult())
             return BadRequest(result.StatusMessage);
         else
@@ -28,10 +28,10 @@ public partial class ClientController
     
     [HttpPost("/v1/clients/many")]
     public async Task<IActionResult> PostRangeAsync
-        ([FromBody] IEnumerable<ClientCreateDto> clients,
-        [FromServices] ClientService service)
+        ([FromBody] IEnumerable<ClientCreateDto> clientCreateDtos,
+        [FromServices] ClientService clientService)
     {
-        var result = await service.CreateRangeAsync(ModelState, clients);
+        var result = await clientService.CreateRangeAsync(ModelState, clientCreateDtos);
 
         if (result.IsBadResult())
             return BadRequest(result.StatusMessage);

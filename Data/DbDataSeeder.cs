@@ -10,18 +10,6 @@ public static class DbDataSeeder
 
         if (context.Positions.Any()) return;
         
-        // --- x Roles ---
-
-        var roles = new List<Role>()
-        {
-            new Role() { Name = "Admin", Description = "Full access to all system features and settings." },
-            new Role() { Name = "Manager", Description = "Can manage employees, view reports." },
-            new Role() { Name = "User", Description = "For Costumers and normal Access." }
-        };
-
-        context.Roles.AddRange(roles);
-        context.SaveChanges();
-        
         // --- 1. POSITIONS ---
         var positions = new List<Position>
         {

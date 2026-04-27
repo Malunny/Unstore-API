@@ -22,11 +22,9 @@ namespace Unstore.Services
             return operationStatus switch
             {
                 OperationStatus.Ok => new ResultStatusMessage(operationStatus, "Ok"),
-
                 OperationStatus.Created => new ResultStatusMessage(operationStatus, "Object Created"),
                 OperationStatus.Deleted => new ResultStatusMessage(operationStatus, "Object Deleted"),
                 OperationStatus.Updated => new ResultStatusMessage(operationStatus, "Object Updated"),
-
                 OperationStatus.UserAlreadyExists => new ResultStatusMessage(operationStatus, "User already exists"),
                 OperationStatus.InvalidCredentials => new ResultStatusMessage(operationStatus, "Invalid credentials"),
                 OperationStatus.Unauthorized => new ResultStatusMessage(operationStatus, "Unauthorized access"),

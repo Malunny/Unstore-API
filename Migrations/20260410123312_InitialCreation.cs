@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Unstore.Migrations
 {
     /// <inheritdoc />
-    public partial class DatabaseCreation : Migration
+    public partial class InitialCreation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -115,10 +117,9 @@ namespace Unstore.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Username = table.Column<string>(type: "nvarchar(20)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(400)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(150)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(30)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(120)", nullable: false),
                     RoleId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -165,7 +166,8 @@ namespace Unstore.Migrations
                     ClientId = table.Column<int>(type: "INTEGER", nullable: false),
                     EmployeeId = table.Column<int>(type: "INTEGER", nullable: false),
                     Details = table.Column<string>(type: "nvarchar(500)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(150)", nullable: false)
+                    Address = table.Column<string>(type: "nvarchar(150)", nullable: false),
+                    Cost = table.Column<decimal>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -230,6 +232,116 @@ namespace Unstore.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Clients",
+                columns: new[] { "Id", "Address", "ContactNumber", "Email", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Av. Paulista, 1000", "1130001000", "contato@solar.com", "Condomínio Solar" },
+                    { 2, "Rua das Flores, 50", "1130002000", "adm@harmonia.com", "Residencial Harmonia" },
+                    { 3, "Rua Saúde, 200", "1130003000", "atendimento@bemestar.com", "Clínica Médica Bem Estar" },
+                    { 4, "Praça da Sé, 10", "1130004000", "pao@central.com", "Padaria Central" },
+                    { 5, "Alameda Santos, 450", "1130005000", "legal@advx.com", "Escritório Advocacia X" },
+                    { 6, "Rua B, 123", "11988887777", "joao@gmail.com", "João da Silva" },
+                    { 7, "Av. Brasil, 99", "11977776666", "maria@yahoo.com", "Maria Oliveira" },
+                    { 8, "Rua Gastronomia, 15", "1130008000", "gerencia@sabor.com", "Restaurante Sabor" },
+                    { 9, "Rua Educação, 88", "1130009000", "diretoria@prime.com", "Escola Infantil Prime" },
+                    { 10, "Rua do Suor, 500", "1130010000", "treino@fit.com", "Academia Fit" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Positions",
+                columns: new[] { "Id", "Description", "Name", "Wage" },
+                values: new object[,]
+                {
+                    { 1, "Especialista em persianas motorizadas", "Instalador Sênior", 3500.00m },
+                    { 2, "Auxílio em furações e transporte", "Ajudante de Instalação", 1800.00m },
+                    { 3, "Atendimento interno e orçamentos", "Consultor de Vendas", 2200.00m }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Products",
+                columns: new[] { "Id", "Description", "ImageUrl", "Name", "ServiceId", "Value" },
+                values: new object[,]
+                {
+                    { 1, "Tecido 100% poliéster", "url.com", "Persiana Rolo Blackout", null, 150.00m },
+                    { 2, "Tecido sob medida", "url.com", "Cortina de Linho", null, 280.00m },
+                    { 3, "Somfy 220v", "url.com", "Motor para Persiana", null, 450.00m }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Administrador total", "ADM" },
+                    { 2, "Acesso a vendas e clientes", "Vendedor" },
+                    { 3, "Acesso a ordens de serviço e ferramentas", "Instalador" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ToolTags",
+                columns: new[] { "Id", "Description", "TagName" },
+                values: new object[,]
+                {
+                    { 1, "Ferramentas que usam bateria ou cabo", "Elétrica" },
+                    { 2, "Precisão e medidas", "Medição" },
+                    { 3, "Ferramentas de mão", "Manual" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Tools",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Furadeira Makita 18V", "Furadeira de Impacto" },
+                    { 2, "Medidor Bosch 50m", "Trena Laser" },
+                    { 3, "Nível de alumínio 60cm", "Nível de Bolha" },
+                    { 4, "Escada 7 degraus", "Escada Extensível" },
+                    { 5, "DeWalt com controle de torque", "Parafusadeira" },
+                    { 6, "Jogo de chaves Phillips e Fenda", "Maleta de Chaves" },
+                    { 7, "Para limpeza pós-furação", "Aspirador Portátil" },
+                    { 8, "Para ajuste de suportes", "Martelo de Borracha" },
+                    { 9, "Corte de sobras de tecido", "Estilete Profissional" },
+                    { 10, "Para evitar furar canos", "Detector de Metais/Vigas" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Employees",
+                columns: new[] { "Id", "Active", "ContactNumber", "Email", "Name", "PositionId" },
+                values: new object[,]
+                {
+                    { 1, true, "11911111111", "roberto@unstore.com", "Roberto Alves", 1 },
+                    { 2, true, "11922222222", "felipe@unstore.com", "Felipe Souza", 2 },
+                    { 3, true, "11933333333", "mariana@unstore.com", "Mariana Costa", 3 },
+                    { 4, true, "11944444444", "lucas@unstore.com", "Lucas Mendes", 1 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Employees",
+                columns: new[] { "Id", "ContactNumber", "Email", "Name", "PositionId" },
+                values: new object[] { 5, "11955555555", "beatriz@unstore.com", "Beatriz Rocha", 2 });
+
+            migrationBuilder.InsertData(
+                table: "ToolToolTags",
+                columns: new[] { "ToolId", "ToolTagId" },
+                values: new object[,]
+                {
+                    { 1, 1 },
+                    { 2, 2 },
+                    { 3, 2 },
+                    { 5, 1 },
+                    { 6, 3 },
+                    { 8, 3 },
+                    { 9, 3 },
+                    { 10, 2 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Services",
+                columns: new[] { "Id", "Address", "ClientId", "Cost", "Details", "EmployeeId" },
+                values: new object[] { 1, "Av. Paulista, 1000 - Sala 5", 1, 0m, "Instalação de 4 persianas blackout motorizadas", 1 });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_PositionId",
                 table: "Employees",
@@ -270,6 +382,12 @@ namespace Unstore.Migrations
                 name: "IX_Users_RoleId",
                 table: "Users",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Username",
+                table: "Users",
+                column: "Username",
+                unique: true);
         }
 
         /// <inheritdoc />

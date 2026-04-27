@@ -1,25 +1,34 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Unstore.Data;
+using Unstore.Services;
 
-namespace Unstore.Controllers.Employee;
+namespace Unstore.Controllers;
 
-[ApiController]
-public class EmployeeController : ControllerBase
+public partial class EmployeeController : ControllerBase
 {
-    [HttpGet("/v1/employees/get-all")]
-    public async Task<IActionResult> GetAllAsync
-        ([FromServices] AppDbContext context)
+    [HttpGet("/v1/employees/{skip:int}/{take:int}")]
+    public async Task<IActionResult> GetSkipTakeAsync
+        ([FromServices] EmployeeService employeeService,
+        [FromRoute] int skip,
+        [FromRoute] int take)
     {
-        return Ok(await context.Employees.ToListAsync());
+        var result = await employeeService.GetRangeAsync(skip, take);
+
+        if (result.IsBadResult())
+            return BadRequest(result.StatusMessage);
+
+        return Ok(result.Data);
     }
-    [HttpGet("/v1/employees/get/{id:int}")]
+    
+    [HttpGet("/v1/employees/{id:int}")]
     public async Task<IActionResult> GetByIdAsync
-        ([FromRoute] int id, [FromServices] AppDbContext context)
+            ([FromRoute] int id,
+            [FromServices] EmployeeService employeeService)
     {
-        var employee = await context.Employees.FirstOrDefaultAsync(x => x.Id == id);
-        if (employee is null)
-            return NotFound("Employee not found");
-        return Ok(employee);
+        var result = await employeeService.GetByIdAsync(id);
+
+        if (result.IsBadResult())
+            return BadRequest(result.StatusMessage);
+
+        return Ok(result.Data);
     }
 }

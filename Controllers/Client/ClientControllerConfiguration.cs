@@ -9,5 +9,5 @@ using Microsoft.AspNetCore.Mvc;
 namespace Unstore.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Admin,Manager")]
+[Authorize(Roles = "ADM, Gerente")]
 public partial class ClientController : ControllerBase {}
