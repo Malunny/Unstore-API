@@ -7,5 +7,5 @@ public class User : BaseModel
     public string Email { get; set; }
     public string Name { get; set; }
     public int RoleId { get; set; }
-    public Role Role { get; set; }
+    public ICollection<Role> Roles { get; set; } = new List<Role>();
 }

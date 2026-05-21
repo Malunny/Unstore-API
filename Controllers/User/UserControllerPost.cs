@@ -24,7 +24,7 @@ public partial class UserController([FromServices] IMapper mapper) : ControllerB
         var role = context.Roles.First(x => x.Id == 3);
 
         userMapped.RoleId = role.Id;
-        userMapped.Role = role;
+        userMapped.Roles = role;
 
         context.Users.Add(userMapped);
         context.SaveChanges();

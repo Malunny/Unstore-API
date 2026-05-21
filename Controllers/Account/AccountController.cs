@@ -46,7 +46,7 @@ public partial class AccountController(IMapper mapper) : ControllerBase
     [HttpGet("/users")]
     public async Task<IActionResult> GetAllUser([FromServices] AppDbContext context)
     {
-        var usersTracked = await context.Users.Include(x => x.Role).ToListAsync();
+        var usersTracked = await context.Users.Include(x => x.Roles).ToListAsync();
         var users = _mapper.Map<IEnumerable<User>, IEnumerable<UserReadDto>>(usersTracked);
         return Ok(ServiceResult<IEnumerable<UserReadDto>>.Success(users));
     }

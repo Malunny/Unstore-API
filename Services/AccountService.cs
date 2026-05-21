@@ -32,7 +32,7 @@ namespace Unstore.Services
 
             User? trackedUser = await _context.Users
                             .AsNoTracking()
-                            .Include(u => u.Role)
+                            .Include(u => u.Roles)
                             .FirstOrDefaultAsync(u => u.Email == userLogin.Email);
     
             if (trackedUser is null)
@@ -70,7 +70,7 @@ namespace Unstore.Services
 
             var mappedUser = _mapper.Map<UserCreationDto, User>(user);
 
-            mappedUser.Role = await _context.Roles.FirstAsync(r => r.Id == 1);
+            mappedUser.Roles = await _context.Roles.FirstAsync(r => r.Id == 1);
 
             await _context.Users.AddAsync(mappedUser);
             await _context.SaveChangesAsync();

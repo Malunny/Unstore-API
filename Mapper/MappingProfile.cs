@@ -72,7 +72,7 @@ public class MappingProfile : Profile
         CreateMap<UserLoginDto, User>();
         CreateMap<UserCreationDto, User>();
         CreateMap<User, UserReadDto>()
-            .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.Name));
+            .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Roles.Name));
         CreateMap<UserUpdateDto, User>()
             .ForAllMembers(options => options
                 .Condition((origin, dest, originValue) => originValue != null && (originValue is not string str || !string.IsNullOrWhiteSpace(str))));

@@ -66,7 +66,7 @@ public class AppDbContext : DbContext
             .IsRequired()
             .HasColumnType("nvarchar(120)");
         modelBuilder.Entity<User>()
-            .HasOne(u => u.Role)
+            .HasOne(u => u.Roles)
             .WithMany(r => r.Users)
             .HasForeignKey(u => u.RoleId);
 

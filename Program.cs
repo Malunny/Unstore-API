@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 ConfigureKeysAndTokens();
 AddAuthentication();
 
-AddServices(builder);
+AddServices();
 ConfigureDbContext();
 
 var app = builder.Build();  
@@ -28,7 +28,7 @@ app.MapControllers();
 app.Run();
 
 
-void AddServices(WebApplicationBuilder builder)
+void AddServices()
 {
     builder.Services.AddTransient<AccountService>();
     builder.Services.AddScoped<ClientService>();

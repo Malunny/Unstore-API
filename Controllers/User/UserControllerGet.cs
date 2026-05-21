@@ -18,7 +18,7 @@ public partial class UserController
         var users = await context.Users
             .Skip(skip)
             .Take(take)
-            .Include(u => u.Role)
+            .Include(u => u.Roles)
             .ToListAsync();
         return Ok(_mapper.Map<IEnumerable<UserReadDto>>(users));
     }
