@@ -10,8 +10,6 @@ appsettings.Development.json
 .idea/
 # Local database file
 app.db
-# Config
-Configuration.cs
 
 # Default ignored files
 /shelf/

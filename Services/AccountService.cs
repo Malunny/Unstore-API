@@ -69,7 +69,7 @@ namespace Unstore.Services
             CreateHashedPassword(user.Password, user);
 
             var mappedUser = _mapper.Map<UserCreationDto, User>(user);
-
+            
             mappedUser.Roles = await _context.Roles.FirstAsync(r => r.Id == 1);
 
             await _context.Users.AddAsync(mappedUser);
