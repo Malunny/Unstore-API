@@ -8,6 +8,7 @@ public class Purchase : BaseModel
     public int AddressId { get; set; }
     public Address Address { get; set; }
     public ICollection<Product> Products { get; set; }
+    public ICollection<ProductPurchase> ProductPurchases { get; set; }
     public int ClientId { get; set; }
     public User Client { get; set; }
     public int SellerId { get; set; }

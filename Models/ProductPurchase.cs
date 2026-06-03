@@ -1,6 +1,6 @@
 ﻿namespace Unstore.Models;
 
-public class ProductPurchase : BaseModel
+public class ProductPurchase
 {
     public int ProductId { get; set; }
     public Product Product { get; set; }
