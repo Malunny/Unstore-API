@@ -13,4 +13,7 @@ public class Address : BaseModel
     public User User { get; set; }
     public int TypeId { get; set; }
     public AddressType Type { get; set; }
+
+    public ICollection<Service> ServicesProvided { get; set; }
+    public ICollection<Purchase> SentPurchases { get; set; }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Unstore.Models;
 
-public class ServiceAvaliation : BaseModel
+public class ServiceAvaliation
 {
     public int UserId { get; set; }
     public User Client { get; set; }

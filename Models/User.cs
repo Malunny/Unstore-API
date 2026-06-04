@@ -13,5 +13,7 @@ public class User : BaseModel
     public ICollection<Role> Roles { get; set; } = new List<Role>();
     public ICollection<Purchase> Purchases { get; set; }
     public ICollection<Service> RequestedServices { get; set; }
+    public ICollection<ServiceAvaliation> ServiceAvaliations { get; set; }
     public ICollection<UserDocument> UserDocuments { get; set; }
+    public ICollection<ProductAvaliation> ProductAvaliations { get; set; }
 }

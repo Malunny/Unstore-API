@@ -12,5 +12,5 @@ public class Purchase : BaseModel
     public int ClientId { get; set; }
     public User Client { get; set; }
     public int SellerId { get; set; }
-    public User Seller { get; set; }
+    public CommercialUser Seller { get; set; }
 }
