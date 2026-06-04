@@ -8,19 +8,18 @@ public class ProductAvaliationModelConfiguration : IEntityTypeConfiguration<Prod
 {
     public void Configure(EntityTypeBuilder<ProductAvaliation> builder)
     {
-        builder.HasKey(x => x.Id);
+        builder.HasKey(x => new { x.UserId, x.ProductId });
 
-        builder.Property(x => x.Description).IsRequired();
         builder.Property(x => x.Description)
-            .HasColumnType("NVARCHAR")
+            .IsRequired()
             .HasMaxLength(500);
         
-        builder.Property(x => x.Stars).IsRequired();
         builder.Property(x => x.Stars)
-            .HasColumnType("INT");
+            .IsRequired()
+            .HasColumnType("TINYINT");
 
         builder.HasOne(x => x.Client)
-            .WithMany()
+            .WithMany(y => y.ProductAvaliations)
             .HasForeignKey(x => x.UserId);
 
         builder.HasOne(x => x.Product)

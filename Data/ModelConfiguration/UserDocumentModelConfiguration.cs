@@ -17,7 +17,7 @@ public class UserDocumentModelConfiguration : IEntityTypeConfiguration<UserDocum
             .HasForeignKey(x => x.UserId);
 
         builder.HasOne(x => x.DocumentType)
-            .WithMany()
+            .WithMany(y => y.UserDocuments)
             .HasForeignKey(x => x.DocumentTypeId);
     }
 }

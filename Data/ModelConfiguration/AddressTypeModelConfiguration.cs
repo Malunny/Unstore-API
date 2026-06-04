@@ -10,14 +10,12 @@ public class AddressTypeModelConfiguration : IEntityTypeConfiguration<AddressTyp
     {
         builder.HasKey(x => x.Id);
         
-        builder.Property(x => x.Key).IsRequired();
         builder.Property(x => x.Key)
-            .HasColumnType("NVARCHAR")
+            .IsRequired()
             .HasMaxLength(100);
         
-        builder.Property(x => x.Description).IsRequired();
         builder.Property(x => x.Description)
-            .HasColumnType("NVARCHAR")
+            .IsRequired()
             .HasMaxLength(200);
     }
 }

@@ -14,12 +14,13 @@ public class ServiceModelConfiguration : IEntityTypeConfiguration<Service>
         builder.Property(x => x.Description)
             .HasMaxLength(500);
         
-        builder.Property(x => x.Cost).IsRequired();
         builder.Property(x => x.Cost)
-            .HasPrecision(2);
+            .IsRequired()
+            .HasColumnType("DECIMAL")
+            .HasPrecision(18, 2);
 
         builder.HasOne(x => x.Address)
-            .WithMany()
+            .WithMany(y => y.ServicesProvided)
             .HasForeignKey(x => x.AddressId);
 
         builder.HasMany(x => x.Clients)

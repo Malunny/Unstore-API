@@ -12,13 +12,15 @@ public class PurchaseModelConfiguration : IEntityTypeConfiguration<Purchase>
 
         builder.Property(x => x.BoughtDate).IsRequired();
         
-        builder.Property(x => x.TotalValue).IsRequired();
         builder.Property(x => x.TotalValue)
-            .HasPrecision(2);
+            .IsRequired()
+            .HasColumnType("DECIMAL")
+            .HasPrecision(18, 2);
         
         builder.HasOne(x => x.Address)
-            .WithMany()
-            .HasForeignKey(x => x.AddressId);
+            .WithMany(y => y.SentPurchases)
+            .HasForeignKey(x => x.AddressId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(x => x.Client)
             .WithMany(x => x.Purchases)
@@ -26,8 +28,13 @@ public class PurchaseModelConfiguration : IEntityTypeConfiguration<Purchase>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(x => x.Seller)
-            .WithMany()
+            .WithMany(x => x.Sales)
             .HasForeignKey(x => x.SellerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(x => x.ProductPurchases)
+            .WithOne(x => x.Purchase)
+            .HasForeignKey(x => x.PurchaseId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
