@@ -8,20 +8,12 @@ public class ServiceAvaliationModelConfiguration : IEntityTypeConfiguration<Serv
 {
     public void Configure(EntityTypeBuilder<ServiceAvaliation> builder)
     {
-        builder.HasKey(x => new {x.UserId, x.ServiceId});
+        builder.HasKey(x => new {x.ClientId, x.ServiceId});
 
         builder.Property(x => x.Stars)
             .IsRequired();
         builder.Property(x => x.Description)
             .IsRequired()
             .HasMaxLength(500);
-
-        builder.HasOne(x => x.Client)
-            .WithMany(y => y.ServiceAvaliations)
-            .HasForeignKey(x => x.UserId);
-
-        builder.HasOne(x => x.Service)
-            .WithMany(y => y.Avaliations)
-            .HasForeignKey(x => x.ServiceId);
     }
 }

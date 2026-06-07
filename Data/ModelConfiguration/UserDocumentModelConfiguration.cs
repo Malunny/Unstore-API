@@ -9,6 +9,10 @@ public class UserDocumentModelConfiguration : IEntityTypeConfiguration<UserDocum
     public void Configure(EntityTypeBuilder<UserDocument> builder)
     {
         builder.HasKey(x => x.Id);
+        
+        builder.Property(x => x.Id)
+            .IsRequired()
+            .UseAutoincrement();
 
         builder.Property(x => x.Information).IsRequired();
 

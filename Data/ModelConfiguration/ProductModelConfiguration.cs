@@ -10,9 +10,9 @@ public class ProductModelConfiguration : IEntityTypeConfiguration<Product>
     {
         builder.HasKey(x => x.Id);
         
-        builder.Property(x => x.Active)
-            .HasColumnType("BIT").
-            IsRequired();
+        builder.Property(x => x.Id)
+            .IsRequired()
+            .UseAutoincrement();
 
         builder.Property(x => x.Name)
             .IsRequired()
@@ -26,9 +26,8 @@ public class ProductModelConfiguration : IEntityTypeConfiguration<Product>
             .IsRequired()
             .HasColumnType("DECIMAL")
             .HasPrecision(18, 2);
-        
+
         builder.Property(x => x.PublishedDate)
-            .IsRequired()
-            .HasDefaultValue("GETDATE()");
+            .IsRequired();
     }
 }

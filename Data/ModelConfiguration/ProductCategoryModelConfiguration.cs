@@ -9,6 +9,10 @@ public class ProductCategoryModelConfiguration : IEntityTypeConfiguration<Produc
     public void Configure(EntityTypeBuilder<ProductCategory> builder)
     {
         builder.HasKey(x => x.Id);
+        
+        builder.Property(x => x.Id)
+            .IsRequired()
+            .UseAutoincrement();
 
         builder.Property(x => x.Key)
             .IsRequired()
@@ -20,6 +24,6 @@ public class ProductCategoryModelConfiguration : IEntityTypeConfiguration<Produc
         
         builder.HasMany(x => x.Products)
             .WithMany(x => x.Categories)
-            .UsingEntity("ProductCategoryMapping");
+            .UsingEntity("ProductCategoriesMapping");
     }
 }

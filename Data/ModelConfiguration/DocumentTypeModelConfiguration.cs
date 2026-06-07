@@ -10,6 +10,10 @@ public class DocumentTypeModelConfiguration : IEntityTypeConfiguration<DocumentT
     {
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.Id)
+            .IsRequired()
+            .UseAutoincrement();
+        
         builder.Property(x => x.Key)
             .IsRequired()
             .HasMaxLength(100);

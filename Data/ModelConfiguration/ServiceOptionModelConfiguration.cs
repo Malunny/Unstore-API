@@ -4,22 +4,22 @@ using Unstore.Models;
 
 namespace Unstore.Data.ModelConfiguration;
 
-public class AddressTypeModelConfiguration : IEntityTypeConfiguration<AddressType>
+public class ServiceOptionModelConfiguration : IEntityTypeConfiguration<ServiceOption>
 {
-    public void Configure(EntityTypeBuilder<AddressType> builder)
+    public void Configure(EntityTypeBuilder<ServiceOption> builder)
     {
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id)
             .IsRequired()
             .UseAutoincrement();
-        
-        builder.Property(x => x.Key)
-            .IsRequired()
-            .HasMaxLength(100);
+
+        builder.Property(x => x.Title)
+            .HasMaxLength(100)
+            .IsRequired();
         
         builder.Property(x => x.Description)
-            .IsRequired()
-            .HasMaxLength(200);
+            .HasMaxLength(500)
+            .IsRequired();
     }
 }

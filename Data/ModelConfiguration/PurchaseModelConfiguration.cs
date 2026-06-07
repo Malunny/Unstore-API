@@ -9,6 +9,10 @@ public class PurchaseModelConfiguration : IEntityTypeConfiguration<Purchase>
     public void Configure(EntityTypeBuilder<Purchase> builder)
     {
         builder.HasKey(x => x.Id);
+        
+        builder.Property(x => x.Id)
+            .IsRequired()
+            .UseAutoincrement();
 
         builder.Property(x => x.BoughtDate).IsRequired();
         
