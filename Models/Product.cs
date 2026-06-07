@@ -10,7 +10,6 @@ public class Product : BaseModel
     
     public ICollection<ProductAvaliation>? Avaliations { get; set; }
     public ICollection<ProductCategory> Categories { get; set; } = new List<ProductCategory>();
-    public ICollection<Purchase> Purchases { get; set; }
     public ICollection<ProductPurchase> ProductPurchases { get; set; }
     
     public Product()
