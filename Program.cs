@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Unstore.Models;
+using Unstore.Services.Account;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,16 +31,10 @@ app.Run();
 
 void AddServices()
 {
-    builder.Services.AddTransient<AccountService>();
-    builder.Services.AddScoped<ClientService>();
-    builder.Services.AddScoped<EmployeeService>();
-    builder.Services.AddScoped<PositionService>();
-    builder.Services.AddScoped<ProductService>();
-    builder.Services.AddScoped<RoleService>();
-    builder.Services.AddScoped<ServiceService>();
-    builder.Services.AddScoped<ToolService>();
-    builder.Services.AddScoped<ToolTagService>();
-    builder.Services.AddTransient<TokenService>();
+    builder.Services.AddScoped<UserService>();
+    builder.Services.AddScoped<AccountService>();
+    builder.Services.AddSingleton<IServiceResultFactoryProvider, DataServiceResultFactoryProvider>();
+    builder.Services.AddTransient<ITokenService, JwtTokenService>();
     builder.Services.AddAutoMapper(typeof(MappingProfile));
 
     builder.Services.AddMemoryCache();

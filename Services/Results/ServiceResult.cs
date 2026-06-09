@@ -1,36 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
+namespace Unstore.Services;
 
-namespace Unstore.Services
+public class DataServiceResultFactory<T> : IServiceResultFactory<T>
 {
-    public readonly record struct ServiceResult<T> 
-    {
-        public T Data { get; init; }
-        public IEnumerable<ResultStatusMessage> StatusMessage { get; init; }= [OperationStatus.Ok.ToResultStatusMessage()];
-
-        public ServiceResult() {}
-
-        public static ServiceResult<T> Success(T data, OperationStatus status = OperationStatus.Ok)
-            => new ServiceResult<T>() { Data = data, StatusMessage = [status.ToResultStatusMessage()]};
-
-        public static ServiceResult<T> Success(T data, IEnumerable<ResultStatusMessage> statusMessage)
-             => new ServiceResult<T>() { Data = data, StatusMessage = statusMessage};
-
-        public static ServiceResult<T> MultipleResults(T data, IEnumerable<ResultStatusMessage> statusMessage)
-             => new ServiceResult<T>() { Data = data, StatusMessage = statusMessage};
-
-        public static ServiceResult<T> Failure(OperationStatus code) 
-            => new ServiceResult<T>() { StatusMessage = [code.ToResultStatusMessage()]};
-        public static ServiceResult<T> Failure(T? data, IEnumerable<ResultStatusMessage> statusMessage)
-             => new ServiceResult<T>() { Data = data, StatusMessage = statusMessage};
-
-        public static ServiceResult<T> Failure(ResultStatusMessage statusMessage)
-             => new ServiceResult<T>() { StatusMessage = [statusMessage]};
-
-        public static ServiceResult<T> Failure(IEnumerable<ResultStatusMessage> statusMessage)
-             => new ServiceResult<T>() { StatusMessage = statusMessage};
-    }
+    public IServiceResult<T> Success(T data)
+        => new DataServiceResult<T>(true, data);
+    public IServiceResult<T> Success(OperationStatus operationStatus, T data)
+        => new DataServiceResult<T>(operationStatus, false, data);
+    public IServiceResult<T> Failure(OperationStatus operationStatus)
+        => new DataServiceResult<T>(operationStatus, false);
 }
