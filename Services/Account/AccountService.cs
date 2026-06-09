@@ -46,25 +46,15 @@ public partial class AccountService : BaseService
     {
         var serviceResultFactory = _serviceResultFactoryProvider.Create<bool>();
         
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine(modelState.ErrorCount);
-        Console.WriteLine("AAAAAAAAAAAAA");
-        Console.ResetColor();
-        
         if (!modelState.IsValid)
             return serviceResultFactory.Failure(OperationStatus.InvalidInput);
-
-        Console.WriteLine("BBBBBBBBBBBBBBBBBBBBBB");
 
         bool exists = Context.Users.Any(x => userRegister.Username == x.Username || userRegister.Email == x.Email);
 
         if (exists)
             return serviceResultFactory.Failure(OperationStatus.UserAlreadyExists);
-
-        Console.WriteLine("CCCCCCCCCCCCCCCCCCCCCCC");
         
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(userRegister.Password);
-        Console.WriteLine("=-=-=-=-=-=-=-=-=-=-=-=-=-");
         var userToCreate = Mapper.Map<UserCreationDto, User>(userRegister);
         userToCreate.PasswordHash = hashedPassword;
 

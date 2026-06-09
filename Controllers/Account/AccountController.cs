@@ -8,6 +8,7 @@ using Unstore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Unstore.Services.Account;
 
 namespace Unstore.Controllers;
 
@@ -21,10 +22,17 @@ public partial class AccountController(IMapper mapper) : ControllerBase
         [FromBody] UserLoginDto user,
         [FromServices] AccountService accountService)
     {
-        var result = await accountService.ValidateLoginAsync(ModelState, user);
-
-        if (result.IsBadResult())
-            return BadRequest(result.StatusMessage);
+        var result = await accountService.TryLoginAsync(user, ModelState);
+        
+        Console.BackgroundColor = ConsoleColor.Green;
+        Console.ForegroundColor = ConsoleColor.Black;
+        Console.WriteLine(result.OperationStatus);
+        Console.WriteLine(result.Data);
+        Console.WriteLine(result.Ok);
+        Console.ResetColor();
+        
+        if (!result.Ok)
+            return BadRequest(result.OperationStatus);
 
         return Ok(result.Data);
     }
@@ -35,10 +43,17 @@ public partial class AccountController(IMapper mapper) : ControllerBase
         [FromBody] UserCreationDto user,
         [FromServices] AccountService accountService)
     {
-        var result = await accountService.RegisterAsync(ModelState, user);
+        var result = await accountService.TryRegisterAsync(user, ModelState);
+        
+        Console.BackgroundColor = ConsoleColor.Green;
+        Console.ForegroundColor = ConsoleColor.Black;
+        Console.WriteLine(result.OperationStatus);
+        Console.WriteLine(result.Data);
+        Console.WriteLine(result.Ok);
+        Console.ResetColor();
 
-        if (result.IsBadResult())
-            return BadRequest(result.StatusMessage);
+        if (!result.Ok)
+            return BadRequest(result.OperationStatus);
 
         return Ok(result.Data);
     }
@@ -48,6 +63,7 @@ public partial class AccountController(IMapper mapper) : ControllerBase
     {
         var usersTracked = await context.Users.Include(x => x.Roles).ToListAsync();
         var users = _mapper.Map<IEnumerable<User>, IEnumerable<UserReadDto>>(usersTracked);
-        return Ok(ServiceResult<IEnumerable<UserReadDto>>.Success(users));
+        
+        return Ok(users);
     }
 }
