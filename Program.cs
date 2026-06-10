@@ -33,7 +33,7 @@ void AddServices()
 {
     builder.Services.AddScoped<UserService>();
     builder.Services.AddScoped<AccountService>();
-    builder.Services.AddSingleton<IServiceResultFactoryProvider, DataServiceResultFactoryProvider>();
+    builder.Services.AddSingleton<IServiceResultFactory, DataServiceResultFactory>();
     builder.Services.AddTransient<ITokenService, JwtTokenService>();
     builder.Services.AddAutoMapper(typeof(MappingProfile));
 

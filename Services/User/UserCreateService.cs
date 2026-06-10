@@ -8,43 +8,39 @@ namespace Unstore.Services;
 
 public partial class UserService : BaseService
 {
-    private readonly IServiceResultFactoryProvider _serviceResultFactoryProvider;
-    public UserService(AppDbContext dbContext, IMapper mapper, IServiceResultFactoryProvider serviceResultFactoryProvider) : base(dbContext, mapper)
+    private readonly IServiceResultFactory _serviceResultFactory;
+    public UserService(AppDbContext dbContext, IMapper mapper, IServiceResultFactory serviceResultFactoryProvider) : base(dbContext, mapper)
     {
-        _serviceResultFactoryProvider = serviceResultFactoryProvider;
+        _serviceResultFactory = serviceResultFactoryProvider;
     }
 
     public async Task<IServiceResult<UserCreationDto>> Create(UserCreationDto createDto)
     {
-        var serviceResultFactory = _serviceResultFactoryProvider.Create<UserCreationDto>();
-
         if (Context.Users.Any(x => x.Email == createDto.Email || x.Username == createDto.Username))
-            return serviceResultFactory.Failure(OperationStatus.UserAlreadyExists);
+            return _serviceResultFactory.Failure<UserCreationDto>(OperationStatus.UserAlreadyExists);
 
         var newUser = Mapper.Map<UserCreationDto, User>(createDto);
 
         await Context.Users.AddAsync(newUser);
         await Context.SaveChangesAsync();
 
-        return serviceResultFactory.Success(createDto);
+        return _serviceResultFactory.Success(createDto);
     }
     
     public async Task<IServiceResult<IEnumerable<UserCreationDto>>> CreateRange(IEnumerable<UserCreationDto> createDtos)
     {
-        var serviceResultFactory = _serviceResultFactoryProvider.Create<IEnumerable<UserCreationDto>>();
-        
         var createDtosList = createDtos.ToList();
         var usersUsernamesExists = await Context.Users.AnyAsync(x => createDtosList.Select(x => x.Username).Contains(x.Username));
         var usersEmailsExists = await Context.Users.AnyAsync(x => createDtosList.Select(x => x.Email).Contains(x.Email));
         
         if (usersUsernamesExists || usersEmailsExists)
-            return serviceResultFactory.Failure(OperationStatus.UserAlreadyExists);
+            return _serviceResultFactory.Failure<IEnumerable<UserCreationDto>>(OperationStatus.UserAlreadyExists);
 
         IEnumerable<User> newUsers = Mapper.Map<List<UserCreationDto>, List<User>>(createDtosList);
 
         await Context.Users.AddRangeAsync(newUsers);
         await Context.SaveChangesAsync();
         
-        return serviceResultFactory.Success(createDtosList);
+        return _serviceResultFactory.Success<IEnumerable<UserCreationDto>>(createDtosList);
     }
 }

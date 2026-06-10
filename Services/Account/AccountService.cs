@@ -11,48 +11,45 @@ namespace Unstore.Services.Account;
 public partial class AccountService : BaseService
 {
     private readonly ITokenService _tokenService;
-    private readonly IServiceResultFactoryProvider _serviceResultFactoryProvider;
+    private readonly IServiceResultFactory _serviceResultFactory;
     // Returns the user token
     public AccountService(AppDbContext dbContext, IMapper mapper, 
-        ITokenService tokenService, IServiceResultFactoryProvider serviceProviderFactoryProvider)
+        ITokenService tokenService, IServiceResultFactory serviceProviderFactoryProvider)
         : base(dbContext, mapper)
     {
         _tokenService = tokenService;
-        _serviceResultFactoryProvider = serviceProviderFactoryProvider;
+        _serviceResultFactory = serviceProviderFactoryProvider;
     }
 
     public async Task<IServiceResult<string>> TryLoginAsync(UserLoginDto userLogin, ModelStateDictionary modelState)
     {
-        var serviceResultFactory = _serviceResultFactoryProvider.Create<string>();
         if (!modelState.IsValid)
-            return serviceResultFactory.Failure(OperationStatus.InvalidLogin);
+            return _serviceResultFactory.Failure<string>(OperationStatus.InvalidLogin);
         
         var user = await Context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Email == userLogin.Email);
         
         if (user == null)
-            return serviceResultFactory.Failure(OperationStatus.NotFound);
+            return _serviceResultFactory.Failure<string>(OperationStatus.NotFound);
         
         bool match = BCrypt.Net.BCrypt.Verify(userLogin.Password, user.PasswordHash);
 
         if (!match)
-            return serviceResultFactory.Failure(OperationStatus.InvalidLogin);
+            return _serviceResultFactory.Failure<string>(OperationStatus.InvalidLogin);
         
         var token = _tokenService.GenerateToken(user);
         
-        return serviceResultFactory.Success(token);
+        return _serviceResultFactory.Success(token);
     }
 
     public async Task<IServiceResult<bool>> TryRegisterAsync(UserCreationDto userRegister, ModelStateDictionary modelState)
     {
-        var serviceResultFactory = _serviceResultFactoryProvider.Create<bool>();
-        
         if (!modelState.IsValid)
-            return serviceResultFactory.Failure(OperationStatus.InvalidInput);
+            return _serviceResultFactory.Failure<bool>(OperationStatus.InvalidInput);
 
         bool exists = Context.Users.Any(x => userRegister.Username == x.Username || userRegister.Email == x.Email);
 
         if (exists)
-            return serviceResultFactory.Failure(OperationStatus.UserAlreadyExists);
+            return _serviceResultFactory.Failure<bool>(OperationStatus.UserAlreadyExists);
         
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(userRegister.Password);
         var userToCreate = Mapper.Map<UserCreationDto, User>(userRegister);
@@ -61,6 +58,6 @@ public partial class AccountService : BaseService
         await Context.Users.AddAsync(userToCreate);
         await Context.SaveChangesAsync();
         
-        return serviceResultFactory.Success(OperationStatus.Created, true);
+        return _serviceResultFactory.Success(OperationStatus.Created, true);
     }
 }
