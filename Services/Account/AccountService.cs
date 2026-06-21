@@ -41,7 +41,7 @@ public partial class AccountService : BaseService
         return _serviceResultFactory.Success(token);
     }
 
-    public async Task<IServiceResult<bool>> TryRegisterAsync(UserCreationDto userRegister, ModelStateDictionary modelState)
+    public async Task<IServiceResult<bool>> TryRegisterAsync(UserCreateDtos userRegister, ModelStateDictionary modelState)
     {
         if (!modelState.IsValid)
             return _serviceResultFactory.Failure<bool>(OperationStatus.InvalidInput);
@@ -52,7 +52,7 @@ public partial class AccountService : BaseService
             return _serviceResultFactory.Failure<bool>(OperationStatus.UserAlreadyExists);
         
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(userRegister.Password);
-        var userToCreate = Mapper.Map<UserCreationDto, User>(userRegister);
+        var userToCreate = Mapper.Map<UserCreateDtos, Models.User>(userRegister);
         userToCreate.PasswordHash = hashedPassword;
 
         await Context.Users.AddAsync(userToCreate);

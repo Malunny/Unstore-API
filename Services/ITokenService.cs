@@ -4,5 +4,5 @@ namespace Unstore.Services;
 
 public interface ITokenService
 {
-    string GenerateToken(User user);
+    string GenerateToken(Models.User user);
 }

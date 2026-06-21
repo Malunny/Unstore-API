@@ -8,7 +8,7 @@ namespace Unstore.Services;
 
 public class JwtTokenService : ITokenService
 {
-    public string GenerateToken(User user)
+    public string GenerateToken(Models.User user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);

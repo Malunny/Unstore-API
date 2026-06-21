@@ -36,7 +36,6 @@ void AddServices()
     builder.Services.AddSingleton<IServiceResultFactory, DataServiceResultFactory>();
     builder.Services.AddTransient<ITokenService, JwtTokenService>();
     builder.Services.AddAutoMapper(typeof(MappingProfile));
-
     builder.Services.AddMemoryCache();
     builder.Services
         .AddControllers()

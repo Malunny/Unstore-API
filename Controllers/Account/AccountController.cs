@@ -40,7 +40,7 @@ public partial class AccountController(IMapper mapper) : ControllerBase
     [AllowAnonymous]
     [HttpPost("/register")]
     public async Task<IActionResult> Register(
-        [FromBody] UserCreationDto user,
+        [FromBody] UserCreateDtos user,
         [FromServices] AccountService accountService)
     {
         var result = await accountService.TryRegisterAsync(user, ModelState);

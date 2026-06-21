@@ -26,16 +26,11 @@ public class PurchaseModelConfiguration : IEntityTypeConfiguration<Purchase>
             .HasForeignKey(x => x.AddressId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(x => x.Client)
+        builder.HasOne(x => x.User)
             .WithMany(x => x.Purchases)
-            .HasForeignKey(x => x.ClientId)
+            .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(x => x.Seller)
-            .WithMany(x => x.Sales)
-            .HasForeignKey(x => x.SellerId)
-            .OnDelete(DeleteBehavior.Restrict);
-
+        
         builder.HasMany(x => x.ProductPurchases)
             .WithOne(x => x.Purchase)
             .HasForeignKey(x => x.PurchaseId)

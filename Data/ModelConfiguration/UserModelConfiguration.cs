@@ -38,8 +38,8 @@ public class UserModelConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey(x => x.UserId);
 
         builder.HasMany(x => x.Purchases)
-            .WithOne(x => x.Client)
-            .HasForeignKey(x => x.ClientId)
+            .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(x => x.UserDocuments)
