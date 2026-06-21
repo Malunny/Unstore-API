@@ -14,13 +14,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 ConfigureKeysAndTokens();
 AddAuthentication();
-
+builder.Services.AddOpenApi();
 AddServices();
 ConfigureDbContext();
 
-var app = builder.Build();  
+var app = builder.Build();
 
+app.UseExceptionHandler();
 app.UseCors(policy => policy.WithOrigins("http://127.0.0.1:5500").AllowAnyMethod().AllowAnyHeader());
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.UseSwaggerUI(options => {options.SwaggerEndpoint("/openapi/v1.json", "Unstore API v1");});    
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -31,12 +38,18 @@ app.Run();
 
 void AddServices()
 {
+    builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+    builder.Services.AddProblemDetails();
+    
     builder.Services.AddScoped<UserService>();
     builder.Services.AddScoped<AccountService>();
     builder.Services.AddSingleton<IServiceResultFactory, DataServiceResultFactory>();
     builder.Services.AddTransient<ITokenService, JwtTokenService>();
+    
     builder.Services.AddAutoMapper(typeof(MappingProfile));
+    
     builder.Services.AddMemoryCache();
+    
     builder.Services
         .AddControllers()
         .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true)
