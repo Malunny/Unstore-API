@@ -19,6 +19,7 @@ public record UserDocumentCreateDto
     public int UserId { get; set; }
     
     [Required(ErrorMessage = "Information is required")]
+    [MaxLength(50)]
     public string Information { get; set; }
     
     [Required(ErrorMessage = "Document Type ID is required")]
@@ -27,10 +28,9 @@ public record UserDocumentCreateDto
 
 public record UserDocumentUpdateDto
 {
-    [Required(ErrorMessage = "User Document ID is required")]
-    public int Id { get; set; }
-
-    public string? Information { get; set; }
-    
-    public int? DocumentTypeId { get; set; }
+    [Required]
+    [MaxLength(50)]
+    public string Information { get; set; }
+    [Required]
+    public int DocumentTypeId { get; set; }
 }

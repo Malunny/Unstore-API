@@ -14,16 +14,9 @@ public class AddressService : BaseService
 
     public async Task<IServiceResult<List<UserAddressReadDto>>> GetAllAsync()
     {
-        try
-        {
-            var addresses = await Context.Addresses.AsNoTracking().ToListAsync();
-            var dtos = Mapper.Map<List<UserAddressReadDto>>(addresses);
-            return new DataServiceResult<List<UserAddressReadDto>>(true, dtos);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<List<UserAddressReadDto>>(OperationStatus.InternalServerError, false);
-        }
+        var addresses = await Context.Addresses.AsNoTracking().ToListAsync();
+        var dtos = Mapper.Map<List<UserAddressReadDto>>(addresses);
+        return new DataServiceResult<List<UserAddressReadDto>>(true, dtos);
     }
 
     public async Task<IServiceResult<UserAddressReadDto>> GetByIdAsync(int id)
@@ -31,20 +24,13 @@ public class AddressService : BaseService
         if (id <= 0)
             return new DataServiceResult<UserAddressReadDto>(OperationStatus.InvalidInput, false);
 
-        try
-        {
-            var address = await Context.Addresses.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        var address = await Context.Addresses.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
-            if (address == null)
-                return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
+        if (address == null)
+            return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
 
-            var dto = Mapper.Map<UserAddressReadDto>(address);
-            return new DataServiceResult<UserAddressReadDto>(true, dto);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<UserAddressReadDto>(OperationStatus.InternalServerError, false);
-        }
+        var dto = Mapper.Map<UserAddressReadDto>(address);
+        return new DataServiceResult<UserAddressReadDto>(true, dto);
     }
 
     public async Task<IServiceResult<List<UserAddressReadDto>>> GetByUserIdAsync(int userId)
@@ -52,20 +38,13 @@ public class AddressService : BaseService
         if (userId <= 0)
             return new DataServiceResult<List<UserAddressReadDto>>(OperationStatus.InvalidInput, false);
 
-        try
-        {
-            var addresses = await Context.Addresses
-                .AsNoTracking()
-                .Where(x => x.UserId == userId)
-                .ToListAsync();
+        var addresses = await Context.Addresses
+            .AsNoTracking()
+            .Where(x => x.UserId == userId)
+            .ToListAsync();
 
-            var dtos = Mapper.Map<List<UserAddressReadDto>>(addresses);
-            return new DataServiceResult<List<UserAddressReadDto>>(true, dtos);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<List<UserAddressReadDto>>(OperationStatus.InternalServerError, false);
-        }
+        var dtos = Mapper.Map<List<UserAddressReadDto>>(addresses);
+        return new DataServiceResult<List<UserAddressReadDto>>(true, dtos);
     }
 
     public async Task<IServiceResult<UserAddressReadDto>> CreateAsync(UserAddressCreateDto createDto)
@@ -73,28 +52,21 @@ public class AddressService : BaseService
         if (createDto == null || createDto.UserId <= 0 || createDto.TypeId <= 0)
             return new DataServiceResult<UserAddressReadDto>(OperationStatus.InvalidInput, false);
 
-        try
-        {
-            var userExists = await Context.Users.AnyAsync(x => x.Id == createDto.UserId);
-            if (!userExists)
-                return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
+        var userExists = await Context.Users.AnyAsync(x => x.Id == createDto.UserId);
+        if (!userExists)
+            return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
 
-            var typeExists = await Context.AddressTypes.AnyAsync(x => x.Id == createDto.TypeId);
-            if (!typeExists)
-                return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
+        var typeExists = await Context.AddressTypes.AnyAsync(x => x.Id == createDto.TypeId);
+        if (!typeExists)
+            return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
 
-            var address = Mapper.Map<Address>(createDto);
+        var address = Mapper.Map<Address>(createDto);
 
-            await Context.Addresses.AddAsync(address);
-            await Context.SaveChangesAsync();
+        await Context.Addresses.AddAsync(address);
+        await Context.SaveChangesAsync();
 
-            var dto = Mapper.Map<UserAddressReadDto>(address);
-            return new DataServiceResult<UserAddressReadDto>(OperationStatus.Created, true, dto);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<UserAddressReadDto>(OperationStatus.InternalServerError, false);
-        }
+        var dto = Mapper.Map<UserAddressReadDto>(address);
+        return new DataServiceResult<UserAddressReadDto>(OperationStatus.Created, true, dto);
     }
 
     public async Task<IServiceResult<UserAddressReadDto>> UpdateAsync(UserAddressUpdateDto updateDto)
@@ -102,31 +74,24 @@ public class AddressService : BaseService
         if (updateDto == null || updateDto.Id <= 0)
             return new DataServiceResult<UserAddressReadDto>(OperationStatus.InvalidInput, false);
 
-        try
-        {
-            var address = await Context.Addresses.FirstOrDefaultAsync(x => x.Id == updateDto.Id);
+        var address = await Context.Addresses.FirstOrDefaultAsync(x => x.Id == updateDto.Id);
 
-            if (address == null)
+        if (address == null)
+            return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
+
+        if (updateDto.TypeId.HasValue && updateDto.TypeId > 0)
+        {
+            var typeExists = await Context.AddressTypes.AnyAsync(x => x.Id == updateDto.TypeId);
+            if (!typeExists)
                 return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
-
-            if (updateDto.TypeId.HasValue && updateDto.TypeId > 0)
-            {
-                var typeExists = await Context.AddressTypes.AnyAsync(x => x.Id == updateDto.TypeId);
-                if (!typeExists)
-                    return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
-            }
-
-            Mapper.Map(updateDto, address);
-            Context.Addresses.Update(address);
-            await Context.SaveChangesAsync();
-
-            var dto = Mapper.Map<UserAddressReadDto>(address);
-            return new DataServiceResult<UserAddressReadDto>(OperationStatus.Updated, true, dto);
         }
-        catch (Exception)
-        {
-            return new DataServiceResult<UserAddressReadDto>(OperationStatus.InternalServerError, false);
-        }
+
+        Mapper.Map(updateDto, address);
+        Context.Addresses.Update(address);
+        await Context.SaveChangesAsync();
+
+        var dto = Mapper.Map<UserAddressReadDto>(address);
+        return new DataServiceResult<UserAddressReadDto>(OperationStatus.Updated, true, dto);
     }
 
     public async Task<IServiceResult<bool>> DeleteAsync(int id)
@@ -134,21 +99,14 @@ public class AddressService : BaseService
         if (id <= 0)
             return new DataServiceResult<bool>(OperationStatus.InvalidInput, false);
 
-        try
-        {
-            var address = await Context.Addresses.FirstOrDefaultAsync(x => x.Id == id);
+        var address = await Context.Addresses.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (address == null)
-                return new DataServiceResult<bool>(OperationStatus.NotFound, false);
+        if (address == null)
+            return new DataServiceResult<bool>(OperationStatus.NotFound, false);
 
-            Context.Addresses.Remove(address);
-            await Context.SaveChangesAsync();
+        Context.Addresses.Remove(address);
+        await Context.SaveChangesAsync();
 
-            return new DataServiceResult<bool>(OperationStatus.Deleted, true, true);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<bool>(OperationStatus.InternalServerError, false);
-        }
+        return new DataServiceResult<bool>(OperationStatus.Deleted, true, true);
     }
 }

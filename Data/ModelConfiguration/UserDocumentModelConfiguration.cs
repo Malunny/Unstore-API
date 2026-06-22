@@ -14,7 +14,9 @@ public class UserDocumentModelConfiguration : IEntityTypeConfiguration<UserDocum
             .IsRequired()
             .UseAutoincrement();
 
-        builder.Property(x => x.Information).IsRequired();
+        builder.Property(x => x.Information)
+            .HasMaxLength(50)
+            .IsRequired();
 
         builder.HasOne(x => x.User)
             .WithMany(x => x.UserDocuments)

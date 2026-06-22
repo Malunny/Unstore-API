@@ -14,16 +14,9 @@ public class ProductAvaliationService : BaseService
 
     public async Task<IServiceResult<List<ProductAvaliationReadDto>>> GetAllAsync()
     {
-        try
-        {
-            var avaliations = await Context.ProductAvaliations.AsNoTracking().ToListAsync();
-            var dtos = Mapper.Map<List<ProductAvaliationReadDto>>(avaliations);
-            return new DataServiceResult<List<ProductAvaliationReadDto>>(true, dtos);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<List<ProductAvaliationReadDto>>(OperationStatus.InternalServerError, false);
-        }
+        var avaliations = await Context.ProductAvaliations.AsNoTracking().ToListAsync();
+        var dtos = Mapper.Map<List<ProductAvaliationReadDto>>(avaliations);
+        return new DataServiceResult<List<ProductAvaliationReadDto>>(true, dtos);
     }
 
     public async Task<IServiceResult<ProductAvaliationReadDto>> GetByIdAsync(int userId, int productId)
@@ -31,22 +24,15 @@ public class ProductAvaliationService : BaseService
         if (userId <= 0 || productId <= 0)
             return new DataServiceResult<ProductAvaliationReadDto>(OperationStatus.InvalidInput, false);
 
-        try
-        {
-            var avaliation = await Context.ProductAvaliations
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
+        var avaliation = await Context.ProductAvaliations
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
 
-            if (avaliation == null)
-                return new DataServiceResult<ProductAvaliationReadDto>(OperationStatus.NotFound, false);
+        if (avaliation == null)
+            return new DataServiceResult<ProductAvaliationReadDto>(OperationStatus.NotFound, false);
 
-            var dto = Mapper.Map<ProductAvaliationReadDto>(avaliation);
-            return new DataServiceResult<ProductAvaliationReadDto>(true, dto);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<ProductAvaliationReadDto>(OperationStatus.InternalServerError, false);
-        }
+        var dto = Mapper.Map<ProductAvaliationReadDto>(avaliation);
+        return new DataServiceResult<ProductAvaliationReadDto>(true, dto);
     }
 
     public async Task<IServiceResult<List<ProductAvaliationReadDto>>> GetByProductIdAsync(int productId)
@@ -54,20 +40,13 @@ public class ProductAvaliationService : BaseService
         if (productId <= 0)
             return new DataServiceResult<List<ProductAvaliationReadDto>>(OperationStatus.InvalidInput, false);
 
-        try
-        {
-            var avaliations = await Context.ProductAvaliations
-                .AsNoTracking()
-                .Where(x => x.ProductId == productId)
-                .ToListAsync();
+        var avaliations = await Context.ProductAvaliations
+            .AsNoTracking()
+            .Where(x => x.ProductId == productId)
+            .ToListAsync();
 
-            var dtos = Mapper.Map<List<ProductAvaliationReadDto>>(avaliations);
-            return new DataServiceResult<List<ProductAvaliationReadDto>>(true, dtos);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<List<ProductAvaliationReadDto>>(OperationStatus.InternalServerError, false);
-        }
+        var dtos = Mapper.Map<List<ProductAvaliationReadDto>>(avaliations);
+        return new DataServiceResult<List<ProductAvaliationReadDto>>(true, dtos);
     }
 
     public async Task<IServiceResult<ProductAvaliationReadDto>> CreateAsync(ProductAvaliationCreateDto createDto)
@@ -75,28 +54,21 @@ public class ProductAvaliationService : BaseService
         if (createDto == null || createDto.UserId <= 0 || createDto.ProductId <= 0)
             return new DataServiceResult<ProductAvaliationReadDto>(OperationStatus.InvalidInput, false);
 
-        try
-        {
-            var userExists = await Context.Users.AnyAsync(x => x.Id == createDto.UserId);
-            if (!userExists)
-                return new DataServiceResult<ProductAvaliationReadDto>(OperationStatus.NotFound, false);
+        var userExists = await Context.Users.AnyAsync(x => x.Id == createDto.UserId);
+        if (!userExists)
+            return new DataServiceResult<ProductAvaliationReadDto>(OperationStatus.NotFound, false);
 
-            var productExists = await Context.Products.AnyAsync(x => x.Id == createDto.ProductId);
-            if (!productExists)
-                return new DataServiceResult<ProductAvaliationReadDto>(OperationStatus.NotFound, false);
+        var productExists = await Context.Products.AnyAsync(x => x.Id == createDto.ProductId);
+        if (!productExists)
+            return new DataServiceResult<ProductAvaliationReadDto>(OperationStatus.NotFound, false);
 
-            var avaliation = Mapper.Map<ProductAvaliation>(createDto);
+        var avaliation = Mapper.Map<ProductAvaliation>(createDto);
 
-            await Context.ProductAvaliations.AddAsync(avaliation);
-            await Context.SaveChangesAsync();
+        await Context.ProductAvaliations.AddAsync(avaliation);
+        await Context.SaveChangesAsync();
 
-            var dto = Mapper.Map<ProductAvaliationReadDto>(avaliation);
-            return new DataServiceResult<ProductAvaliationReadDto>(OperationStatus.Created, true, dto);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<ProductAvaliationReadDto>(OperationStatus.InternalServerError, false);
-        }
+        var dto = Mapper.Map<ProductAvaliationReadDto>(avaliation);
+        return new DataServiceResult<ProductAvaliationReadDto>(OperationStatus.Created, true, dto);
     }
 
     public async Task<IServiceResult<bool>> DeleteAsync(int userId, int productId)
@@ -104,22 +76,15 @@ public class ProductAvaliationService : BaseService
         if (userId <= 0 || productId <= 0)
             return new DataServiceResult<bool>(OperationStatus.InvalidInput, false);
 
-        try
-        {
-            var avaliation = await Context.ProductAvaliations
-                .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
+        var avaliation = await Context.ProductAvaliations
+            .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
 
-            if (avaliation == null)
-                return new DataServiceResult<bool>(OperationStatus.NotFound, false);
+        if (avaliation == null)
+            return new DataServiceResult<bool>(OperationStatus.NotFound, false);
 
-            Context.ProductAvaliations.Remove(avaliation);
-            await Context.SaveChangesAsync();
+        Context.ProductAvaliations.Remove(avaliation);
+        await Context.SaveChangesAsync();
 
-            return new DataServiceResult<bool>(OperationStatus.Deleted, true, true);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<bool>(OperationStatus.InternalServerError, false);
-        }
+        return new DataServiceResult<bool>(OperationStatus.Deleted, true, true);
     }
 }

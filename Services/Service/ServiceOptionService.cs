@@ -14,16 +14,9 @@ public class ServiceOptionService : BaseService
 
     public async Task<IServiceResult<List<ServiceServiceOptionReadDto>>> GetAllAsync()
     {
-        try
-        {
-            var options = await Context.ServiceOptions.AsNoTracking().ToListAsync();
-            var dtos = Mapper.Map<List<ServiceServiceOptionReadDto>>(options);
-            return new DataServiceResult<List<ServiceServiceOptionReadDto>>(true, dtos);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<List<ServiceServiceOptionReadDto>>(OperationStatus.InternalServerError, false);
-        }
+        var options = await Context.ServiceOptions.AsNoTracking().ToListAsync();
+        var dtos = Mapper.Map<List<ServiceServiceOptionReadDto>>(options);
+        return new DataServiceResult<List<ServiceServiceOptionReadDto>>(true, dtos);
     }
 
     public async Task<IServiceResult<ServiceServiceOptionReadDto>> GetByIdAsync(int id)
@@ -31,20 +24,13 @@ public class ServiceOptionService : BaseService
         if (id <= 0)
             return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.InvalidInput, false);
 
-        try
-        {
-            var option = await Context.ServiceOptions.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        var option = await Context.ServiceOptions.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
-            if (option == null)
-                return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.NotFound, false);
+        if (option == null)
+            return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.NotFound, false);
 
-            var dto = Mapper.Map<ServiceServiceOptionReadDto>(option);
-            return new DataServiceResult<ServiceServiceOptionReadDto>(true, dto);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.InternalServerError, false);
-        }
+        var dto = Mapper.Map<ServiceServiceOptionReadDto>(option);
+        return new DataServiceResult<ServiceServiceOptionReadDto>(true, dto);
     }
 
     public async Task<IServiceResult<List<ServiceServiceOptionReadDto>>> GetByServiceIdAsync(int serviceId)
@@ -52,20 +38,13 @@ public class ServiceOptionService : BaseService
         if (serviceId <= 0)
             return new DataServiceResult<List<ServiceServiceOptionReadDto>>(OperationStatus.InvalidInput, false);
 
-        try
-        {
-            var options = await Context.ServiceOptions
-                .AsNoTracking()
-                .Where(x => x.ServiceId == serviceId)
-                .ToListAsync();
+        var options = await Context.ServiceOptions
+            .AsNoTracking()
+            .Where(x => x.ServiceId == serviceId)
+            .ToListAsync();
 
-            var dtos = Mapper.Map<List<ServiceServiceOptionReadDto>>(options);
-            return new DataServiceResult<List<ServiceServiceOptionReadDto>>(true, dtos);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<List<ServiceServiceOptionReadDto>>(OperationStatus.InternalServerError, false);
-        }
+        var dtos = Mapper.Map<List<ServiceServiceOptionReadDto>>(options);
+        return new DataServiceResult<List<ServiceServiceOptionReadDto>>(true, dtos);
     }
 
     public async Task<IServiceResult<ServiceServiceOptionReadDto>> CreateAsync(ServiceServiceOptionCreateDto createDto)
@@ -73,24 +52,17 @@ public class ServiceOptionService : BaseService
         if (createDto == null || createDto.ServiceId <= 0)
             return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.InvalidInput, false);
 
-        try
-        {
-            var serviceExists = await Context.Services.AnyAsync(x => x.Id == createDto.ServiceId);
-            if (!serviceExists)
-                return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.NotFound, false);
+        var serviceExists = await Context.Services.AnyAsync(x => x.Id == createDto.ServiceId);
+        if (!serviceExists)
+            return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.NotFound, false);
 
-            var option = Mapper.Map<ServiceOption>(createDto);
+        var option = Mapper.Map<ServiceOption>(createDto);
 
-            await Context.ServiceOptions.AddAsync(option);
-            await Context.SaveChangesAsync();
+        await Context.ServiceOptions.AddAsync(option);
+        await Context.SaveChangesAsync();
 
-            var dto = Mapper.Map<ServiceServiceOptionReadDto>(option);
-            return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.Created, true, dto);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.InternalServerError, false);
-        }
+        var dto = Mapper.Map<ServiceServiceOptionReadDto>(option);
+        return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.Created, true, dto);
     }
 
     public async Task<IServiceResult<ServiceServiceOptionReadDto>> UpdateAsync(ServiceServiceOptionUpdateDto updateDto)
@@ -98,24 +70,17 @@ public class ServiceOptionService : BaseService
         if (updateDto == null || updateDto.Id <= 0)
             return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.InvalidInput, false);
 
-        try
-        {
-            var option = await Context.ServiceOptions.FirstOrDefaultAsync(x => x.Id == updateDto.Id);
+        var option = await Context.ServiceOptions.FirstOrDefaultAsync(x => x.Id == updateDto.Id);
 
-            if (option == null)
-                return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.NotFound, false);
+        if (option == null)
+            return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.NotFound, false);
 
-            Mapper.Map(updateDto, option);
-            Context.ServiceOptions.Update(option);
-            await Context.SaveChangesAsync();
+        Mapper.Map(updateDto, option);
+        Context.ServiceOptions.Update(option);
+        await Context.SaveChangesAsync();
 
-            var dto = Mapper.Map<ServiceServiceOptionReadDto>(option);
-            return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.Updated, true, dto);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.InternalServerError, false);
-        }
+        var dto = Mapper.Map<ServiceServiceOptionReadDto>(option);
+        return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.Updated, true, dto);
     }
 
     public async Task<IServiceResult<bool>> DeleteAsync(int id)
@@ -123,21 +88,14 @@ public class ServiceOptionService : BaseService
         if (id <= 0)
             return new DataServiceResult<bool>(OperationStatus.InvalidInput, false);
 
-        try
-        {
-            var option = await Context.ServiceOptions.FirstOrDefaultAsync(x => x.Id == id);
+        var option = await Context.ServiceOptions.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (option == null)
-                return new DataServiceResult<bool>(OperationStatus.NotFound, false);
+        if (option == null)
+            return new DataServiceResult<bool>(OperationStatus.NotFound, false);
 
-            Context.ServiceOptions.Remove(option);
-            await Context.SaveChangesAsync();
+        Context.ServiceOptions.Remove(option);
+        await Context.SaveChangesAsync();
 
-            return new DataServiceResult<bool>(OperationStatus.Deleted, true, true);
-        }
-        catch (Exception)
-        {
-            return new DataServiceResult<bool>(OperationStatus.InternalServerError, false);
-        }
+        return new DataServiceResult<bool>(OperationStatus.Deleted, true, true);
     }
 }
