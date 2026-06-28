@@ -49,7 +49,7 @@ public class AddressService : BaseService
 
     public async Task<IServiceResult<UserAddressReadDto>> CreateAsync(UserAddressCreateDto createDto)
     {
-        if (createDto == null || createDto.UserId <= 0 || createDto.TypeId <= 0)
+        if (createDto.UserId <= 0 || createDto.TypeId <= 0)
             return new DataServiceResult<UserAddressReadDto>(OperationStatus.InvalidInput, false);
 
         var userExists = await Context.Users.AnyAsync(x => x.Id == createDto.UserId);
@@ -71,7 +71,7 @@ public class AddressService : BaseService
 
     public async Task<IServiceResult<UserAddressReadDto>> UpdateAsync(UserAddressUpdateDto updateDto)
     {
-        if (updateDto == null || updateDto.Id <= 0)
+        if (updateDto.Id <= 0)
             return new DataServiceResult<UserAddressReadDto>(OperationStatus.InvalidInput, false);
 
         var address = await Context.Addresses.FirstOrDefaultAsync(x => x.Id == updateDto.Id);
@@ -79,7 +79,7 @@ public class AddressService : BaseService
         if (address == null)
             return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
 
-        if (updateDto.TypeId.HasValue && updateDto.TypeId > 0)
+        if (updateDto.TypeId.HasValue & updateDto.TypeId > 0)
         {
             var typeExists = await Context.AddressTypes.AnyAsync(x => x.Id == updateDto.TypeId);
             if (!typeExists)

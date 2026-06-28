@@ -11,7 +11,6 @@ public record CommercialUserCreateDto
     [Required]
     [MaxLength(500)]
     public string About { get; set; }
-    [Required]
     public int OriginalUserId { get; set; }
 }
 

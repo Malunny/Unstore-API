@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Unstore.Models;
 using Unstore.Services.Account;
+using Unstore.Services.Product;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +43,9 @@ void AddServices()
     builder.Services.AddProblemDetails();
     
     builder.Services.AddScoped<UserService>();
+    builder.Services.AddScoped<ProductService>();
     builder.Services.AddScoped<AccountService>();
+    builder.Services.AddScoped<AuthorizationService>();
     builder.Services.AddSingleton<IServiceResultFactory, DataServiceResultFactory>();
     builder.Services.AddTransient<ITokenService, JwtTokenService>();
     

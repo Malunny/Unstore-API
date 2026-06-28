@@ -43,13 +43,19 @@ public partial class AccountService : BaseService
 
     public async Task<IServiceResult<bool>> TryRegisterAsync(UserCreateDtos userRegister, ModelStateDictionary modelState)
     {
+        Console.WriteLine("--------------------------------------------------- 0");
         if (!modelState.IsValid)
+        {
+            Console.WriteLine(modelState.Values);
             return _serviceResultFactory.Failure<bool>(OperationStatus.InvalidInput);
-
+        }
+            
+        Console.WriteLine("--------------------------------------------------- 1");
         bool exists = Context.Users.Any(x => userRegister.Username == x.Username || userRegister.Email == x.Email);
-
+        
         if (exists)
             return _serviceResultFactory.Failure<bool>(OperationStatus.UserAlreadyExists);
+        Console.WriteLine("--------------------------------------------------- 3");
         
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(userRegister.Password);
         var userToCreate = Mapper.Map<UserCreateDtos, Models.User>(userRegister);
@@ -59,5 +65,27 @@ public partial class AccountService : BaseService
         await Context.SaveChangesAsync();
         
         return _serviceResultFactory.Success(OperationStatus.Created, true);
+    }
+
+    public async Task<IServiceResult<CommercialUserCreateDto>> AddCommercialUserAsync(CommercialUserCreateDto dto, string username)
+    {
+        Console.WriteLine("----------------------------------------------------------");
+        var user = await Context.Users.FirstOrDefaultAsync(x => x.Username == username);
+        Console.WriteLine("---------------------------------------------------------");
+        if (user == null)
+            return _serviceResultFactory.Failure<CommercialUserCreateDto>(OperationStatus.NotFound);
+        Console.WriteLine("---------------------------------------------------------");
+        dto.OriginalUserId = user.Id;
+        Console.WriteLine("-----------------------------------------------------------");
+        
+        var commercialUser = Mapper.Map<Models.CommercialUser>(dto);
+        commercialUser.OriginalUserId = user.Id;
+
+        Console.WriteLine("AAAAAAAAAAAAAAAAAAAA");
+        
+        await Context.CommercialUsers.AddAsync(commercialUser);
+        Console.WriteLine("AAAAAAAAAAAAAAAAAAAA");
+        await Context.SaveChangesAsync();
+        return _serviceResultFactory.Success(dto);
     }
 }

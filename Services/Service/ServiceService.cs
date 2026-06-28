@@ -52,7 +52,7 @@ public class ServiceService : BaseService
 
     public async Task<IServiceResult<ServiceReadDto>> CreateAsync(ServiceCreateDto createDto)
     {
-        if (createDto == null || createDto.ProviderId <= 0)
+        if (createDto.ProviderId <= 0)
             return new DataServiceResult<ServiceReadDto>(OperationStatus.InvalidInput, false);
 
         var providerExists = await Context.CommercialUsers.AnyAsync(x => x.Id == createDto.ProviderId);
@@ -71,7 +71,7 @@ public class ServiceService : BaseService
 
     public async Task<IServiceResult<ServiceReadDto>> UpdateAsync(ServiceUpdateDto updateDto)
     {
-        if (updateDto == null || updateDto.Id <= 0)
+        if (updateDto.Id <= 0)
             return new DataServiceResult<ServiceReadDto>(OperationStatus.InvalidInput, false);
 
         var service = await Context.Services.FirstOrDefaultAsync(x => x.Id == updateDto.Id);

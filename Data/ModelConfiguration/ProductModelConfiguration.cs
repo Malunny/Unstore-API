@@ -29,5 +29,9 @@ public class ProductModelConfiguration : IEntityTypeConfiguration<Product>
 
         builder.Property(x => x.PublishedDate)
             .IsRequired();
+
+        builder.HasOne(x => x.Seller)
+            .WithMany(y => y.SellingProducts)
+            .HasForeignKey(x => x.SellerId);
     }
 }

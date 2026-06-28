@@ -7,6 +7,8 @@ public class Product : BaseModel
     public decimal Value { get; set; }
     public DateTime PublishedDate { get; set; } = DateTime.Now;
     public bool Active { get; set; }
+    public CommercialUser Seller { get; set; }
+    public int SellerId { get; set; }
     
     public ICollection<ProductAvaliation>? Avaliations { get; set; }
     public ICollection<ProductCategory> Categories { get; set; } = new List<ProductCategory>();

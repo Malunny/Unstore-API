@@ -30,8 +30,8 @@ public partial class UserService : BaseService
     public async Task<IServiceResult<IEnumerable<UserCreateDtos>>> CreateAsyncRange(IEnumerable<UserCreateDtos> createDtos)
     {
         var createDtosList = createDtos.ToList();
-        var usersUsernamesExists = await Context.Users.AnyAsync(x => createDtosList.Select(x => x.Username).Contains(x.Username));
-        var usersEmailsExists = await Context.Users.AnyAsync(x => createDtosList.Select(x => x.Email).Contains(x.Email));
+        var usersUsernamesExists = await Context.Users.AnyAsync(x => createDtosList.Select(y => y.Username).Contains(x.Username));
+        var usersEmailsExists = await Context.Users.AnyAsync(x => createDtosList.Select(y => y.Email).Contains(x.Email));
         
         if (usersUsernamesExists || usersEmailsExists)
             return _serviceResultFactory.Failure<IEnumerable<UserCreateDtos>>(OperationStatus.UserAlreadyExists);

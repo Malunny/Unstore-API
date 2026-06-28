@@ -66,7 +66,7 @@ public class UserManagementService : BaseService
 
     public async Task<IServiceResult<UserReadDto>> UpdateAsync(UserUpdateDto updateDto)
     {
-        if (updateDto == null || updateDto.Id <= 0)
+        if (updateDto.Id <= 0)
             return new DataServiceResult<UserReadDto>(OperationStatus.InvalidInput, false);
 
         var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == updateDto.Id);

@@ -14,7 +14,7 @@ public class CommercialUserModelConfiguration : IEntityTypeConfiguration<Commerc
             .IsRequired()
             .UseAutoincrement();
         
-        builder.Property(x => x.ComercialName)
+        builder.Property(x => x.CommercialName)
             .IsRequired()
             .HasMaxLength(100);
         

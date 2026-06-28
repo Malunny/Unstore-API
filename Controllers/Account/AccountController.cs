@@ -24,13 +24,6 @@ public partial class AccountController(IMapper mapper) : ControllerBase
     {
         var result = await accountService.TryLoginAsync(user, ModelState);
         
-        Console.BackgroundColor = ConsoleColor.Green;
-        Console.ForegroundColor = ConsoleColor.Black;
-        Console.WriteLine(result.OperationStatus);
-        Console.WriteLine(result.Data);
-        Console.WriteLine(result.Ok);
-        Console.ResetColor();
-        
         if (!result.Ok)
             return BadRequest(result.OperationStatus);
 
@@ -44,13 +37,6 @@ public partial class AccountController(IMapper mapper) : ControllerBase
         [FromServices] AccountService accountService)
     {
         var result = await accountService.TryRegisterAsync(user, ModelState);
-        
-        Console.BackgroundColor = ConsoleColor.Green;
-        Console.ForegroundColor = ConsoleColor.Black;
-        Console.WriteLine(result.OperationStatus);
-        Console.WriteLine(result.Data);
-        Console.WriteLine(result.Ok);
-        Console.ResetColor();
 
         if (!result.Ok)
             return BadRequest(result.OperationStatus);
@@ -65,5 +51,30 @@ public partial class AccountController(IMapper mapper) : ControllerBase
         var users = _mapper.Map<IEnumerable<User>, IEnumerable<UserReadDto>>(usersTracked);
         
         return Ok(users);
+    }
+
+    [HttpPost("/api/users/commercial")]
+    public async Task<IActionResult> AddCommercialUser([FromBody] CommercialUserCreateDto dto, [FromServices] AccountService accountService)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest();
+
+        var username = User?.Identity?.Name;
+        
+        if (username is null)
+            return BadRequest();
+        
+        var serviceResult = await accountService.AddCommercialUserAsync(dto, username);
+        
+        if (!serviceResult.Ok)
+            return BadRequest(serviceResult.OperationStatus);
+        
+        return Created("/users/commercial", dto);
+    }
+
+    [HttpGet("/users/commercial")]
+    public IActionResult CommercialUsers([FromServices]  AppDbContext context)
+    {
+        return Ok(context.CommercialUsers.ToList());
     }
 }

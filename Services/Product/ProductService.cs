@@ -12,9 +12,21 @@ public class ProductService : BaseService
     {
     }
 
-    public async Task<IServiceResult<List<ProductReadDto>>> GetAllAsync()
+    public async Task<IServiceResult<List<ProductReadDto>>> GetRangeAsync(int start, int finish, bool canRetrieveMoreThanLimit)
     {
-        var products = await Context.Products.AsNoTracking().ToListAsync();
+        var paginationLimit = 25;
+        
+        if (start < 0 || finish <= 0 | finish < start)
+            return new DataServiceResult<List<ProductReadDto>>(OperationStatus.InvalidInput, false);
+        
+        if (!canRetrieveMoreThanLimit & finish > paginationLimit)
+            return new DataServiceResult<List<ProductReadDto>>(OperationStatus.InvalidInput, false);
+        
+        var products = await Context.Products
+            .AsNoTracking()
+            .Skip(start)
+            .Take(finish)
+            .ToListAsync();
         var dtos = Mapper.Map<List<ProductReadDto>>(products);
         return new DataServiceResult<List<ProductReadDto>>(true, dtos);
     }
@@ -33,14 +45,24 @@ public class ProductService : BaseService
         return new DataServiceResult<ProductReadDto>(true, dto);
     }
 
-    public async Task<IServiceResult<ProductReadDto>> CreateAsync(ProductCreateDto createDto)
+    public async Task<IServiceResult<ProductReadDto>> CreateAsync(ProductCreateDto createDto, string username)
     {
-        if (createDto == null)
+        Console.WriteLine("-----------------x");
+        if (string.IsNullOrWhiteSpace(username))
             return new DataServiceResult<ProductReadDto>(OperationStatus.InvalidInput, false);
+        Console.WriteLine("-----------------x");
+        var user = await Context.Users.Include(x => x.CommercialUser)
+            .FirstOrDefaultAsync(x => x.Username == username);
+        
+        if (user is null | user?.CommercialUser is null)
+            return new DataServiceResult<ProductReadDto>(OperationStatus.InvalidInput, false);
+        Console.WriteLine("-----------------x");
 
         var product = Mapper.Map<Models.Product>(createDto);
         product.Active = true;
-
+        product.SellerId = user.Id;
+        product.Seller = user.CommercialUser;
+        
         await Context.Products.AddAsync(product);
         await Context.SaveChangesAsync();
 
@@ -50,14 +72,14 @@ public class ProductService : BaseService
 
     public async Task<IServiceResult<ProductReadDto>> UpdateAsync(ProductUpdateDto updateDto)
     {
-        if (updateDto == null || updateDto.Id <= 0)
+        if (updateDto.Id <= 0)
             return new DataServiceResult<ProductReadDto>(OperationStatus.InvalidInput, false);
 
         var product = await Context.Products.FirstOrDefaultAsync(x => x.Id == updateDto.Id);
 
         if (product == null)
             return new DataServiceResult<ProductReadDto>(OperationStatus.NotFound, false);
-
+        
         Mapper.Map(updateDto, product);
         Context.Products.Update(product);
         await Context.SaveChangesAsync();
