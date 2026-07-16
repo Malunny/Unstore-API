@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Unstore.Data;
 using Unstore.DTOs;
+using Unstore.DTOs.Mapping;
 using Unstore.Models;
 
 namespace Unstore.Services;
@@ -62,5 +63,27 @@ public class UserPurchaseService : BaseService
         await Context.SaveChangesAsync();
         
         return _serviceResultFactory.Success(purchase);
+    }
+
+    public async Task<IServiceResult<List<PurchaseReadDto>>> GetPurchasesAsync(string username)
+    {
+        var userIdUsername = await Context.Users.AsNoTracking()
+            .Select(x => new { x.Id, x.Username })
+            .FirstOrDefaultAsync(x => x.Username == username);
+        
+        if  (userIdUsername == null)
+            return _serviceResultFactory.Failure<List<PurchaseReadDto>>(OperationStatus.NotFound);
+        
+        var userPurchases = await Context.Purchases
+            .AsNoTracking()
+            .Where(x => x.UserId == userIdUsername.Id)
+            .ToListAsync();
+
+        var purchasesDtos = new List<PurchaseReadDto>();
+        
+        foreach (var purchase in userPurchases)
+            purchasesDtos.Add(purchase.MapToReadDto());
+        
+        return _serviceResultFactory.Success(purchasesDtos);
     }
 }

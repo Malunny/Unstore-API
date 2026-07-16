@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
@@ -21,13 +22,10 @@ public partial class AccountService : BaseService
         _serviceResultFactory = serviceProviderFactoryProvider;
     }
 
-    public async Task<IServiceResult<string>> TryLoginAsync(UserLoginDto userLogin, ModelStateDictionary modelState)
+    public async Task<IServiceResult<string>> TryLoginAsync(UserLoginDto userLogin)
     {
-        if (!modelState.IsValid)
-            return _serviceResultFactory.Failure<string>(OperationStatus.InvalidLogin);
-        
         var user = await Context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Email == userLogin.Email);
-        
+
         if (user == null)
             return _serviceResultFactory.Failure<string>(OperationStatus.NotFound);
         
@@ -35,31 +33,23 @@ public partial class AccountService : BaseService
 
         if (!match)
             return _serviceResultFactory.Failure<string>(OperationStatus.InvalidLogin);
-        
+
         var token = _tokenService.GenerateToken(user);
         
         return _serviceResultFactory.Success(token);
     }
 
-    public async Task<IServiceResult<bool>> TryRegisterAsync(UserCreateDtos userRegister, ModelStateDictionary modelState)
+    public async Task<IServiceResult<bool>> TryRegisterAsync(UserCreateDtos userRegister)
     {
-        Console.WriteLine("--------------------------------------------------- 0");
-        if (!modelState.IsValid)
-        {
-            Console.WriteLine(modelState.Values);
-            return _serviceResultFactory.Failure<bool>(OperationStatus.InvalidInput);
-        }
-            
-        Console.WriteLine("--------------------------------------------------- 1");
         bool exists = Context.Users.Any(x => userRegister.Username == x.Username || userRegister.Email == x.Email);
         
         if (exists)
             return _serviceResultFactory.Failure<bool>(OperationStatus.UserAlreadyExists);
-        Console.WriteLine("--------------------------------------------------- 3");
         
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(userRegister.Password);
         var userToCreate = Mapper.Map<UserCreateDtos, Models.User>(userRegister);
         userToCreate.PasswordHash = hashedPassword;
+        userToCreate.Active = true;
 
         await Context.Users.AddAsync(userToCreate);
         await Context.SaveChangesAsync();
@@ -67,25 +57,50 @@ public partial class AccountService : BaseService
         return _serviceResultFactory.Success(OperationStatus.Created, true);
     }
 
+    public async Task<IServiceResult<bool>> ChangePasswordAsync(string password, string username)
+    {
+        var user = await Context.Users
+            .FirstOrDefaultAsync(x => x.Username == username);
+        
+        if (user == null)
+            return  _serviceResultFactory.Failure<bool>(OperationStatus.NotFound);
+        
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+        
+        await Context.SaveChangesAsync();
+        
+        return _serviceResultFactory.Success(true);
+    }
+
     public async Task<IServiceResult<CommercialUserCreateDto>> AddCommercialUserAsync(CommercialUserCreateDto dto, string username)
     {
-        Console.WriteLine("----------------------------------------------------------");
         var user = await Context.Users.FirstOrDefaultAsync(x => x.Username == username);
-        Console.WriteLine("---------------------------------------------------------");
         if (user == null)
             return _serviceResultFactory.Failure<CommercialUserCreateDto>(OperationStatus.NotFound);
-        Console.WriteLine("---------------------------------------------------------");
         dto.OriginalUserId = user.Id;
-        Console.WriteLine("-----------------------------------------------------------");
         
         var commercialUser = Mapper.Map<Models.CommercialUser>(dto);
         commercialUser.OriginalUserId = user.Id;
-
-        Console.WriteLine("AAAAAAAAAAAAAAAAAAAA");
         
         await Context.CommercialUsers.AddAsync(commercialUser);
-        Console.WriteLine("AAAAAAAAAAAAAAAAAAAA");
         await Context.SaveChangesAsync();
+        return _serviceResultFactory.Success(dto);
+    }
+
+    public async Task<IServiceResult<UserUpdateDto>> UpdateUserAsync(UserUpdateDto dto,
+        string username)
+    {
+        var user = await Context.Users.FirstOrDefaultAsync(x => x.Username == username);
+        if (user == null)
+            return _serviceResultFactory.Failure<UserUpdateDto>(OperationStatus.NotFound);
+        
+        bool emailExists = await Context.Users.AnyAsync(x => x.Email == dto.Email);
+        if (emailExists)
+            return _serviceResultFactory.Failure<UserUpdateDto>(OperationStatus.UserAlreadyExists);
+
+        user.Name = dto.Name;
+        user.Email = dto.Email;
+
         return _serviceResultFactory.Success(dto);
     }
 }

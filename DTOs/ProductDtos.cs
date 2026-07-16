@@ -43,14 +43,12 @@ public record ProductUpdateDto
 
     [MaxLength(100, ErrorMessage = "Product name must not exceed 100 characters")]
     [MinLength(2, ErrorMessage = "Product name must be at least 2 characters long")]
-    public string? Name { get; set; }
+    public string Name { get; set; }
     
     [MaxLength(500, ErrorMessage = "Product description must not exceed 500 characters")]
     [MinLength(5, ErrorMessage = "Product description must be at least 5 characters long")]
-    public string? Description { get; set; }
+    public string Description { get; set; }
     
     [Range(0.01, double.MaxValue, ErrorMessage = "Product value must be greater than 0")]
-    public decimal? Value { get; set; }
-    
-    public bool? Active { get; set; }
+    public decimal Value { get; set; }
 }

@@ -6,10 +6,10 @@ using Unstore;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using Unstore.Models;
 using Unstore.Services.Account;
+using Unstore.Services.CommercialUser;
 using Unstore.Services.Product;
+using Unstore.Services.User;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,14 +21,16 @@ ConfigureDbContext();
 
 var app = builder.Build();
 
-app.UseExceptionHandler();
 app.UseCors(policy => policy.WithOrigins("http://127.0.0.1:5500").AllowAnyMethod().AllowAnyHeader());
 
 if (app.Environment.IsDevelopment())
 {
+    Configuration.TokenExpirationTimeHours = 96;
     app.MapOpenApi();
     app.UseSwaggerUI(options => {options.SwaggerEndpoint("/openapi/v1.json", "Unstore API v1");});    
 }
+else
+    app.UseExceptionHandler();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -45,7 +47,11 @@ void AddServices()
     builder.Services.AddScoped<UserService>();
     builder.Services.AddScoped<ProductService>();
     builder.Services.AddScoped<AccountService>();
+    builder.Services.AddScoped<CommercialAccountService>();
+    builder.Services.AddScoped<CommercialUserActionService>();
+    builder.Services.AddScoped<UserVerificationService>();
     builder.Services.AddScoped<AuthorizationService>();
+    builder.Services.AddScoped<UserPurchaseService>();
     builder.Services.AddSingleton<IServiceResultFactory, DataServiceResultFactory>();
     builder.Services.AddTransient<ITokenService, JwtTokenService>();
     

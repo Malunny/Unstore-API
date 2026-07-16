@@ -13,6 +13,7 @@ public class JwtTokenService : ITokenService
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);
         var roles = string.Join(", ",  user.Roles.Select(x => x.Name));
+        var hours = Configuration.TokenExpirationTimeHours;
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new Claim[]
@@ -20,7 +21,7 @@ public class JwtTokenService : ITokenService
                     new (ClaimTypes.Name, user.Username),
                     new (ClaimTypes.Role, roles)
                 }),
-            Expires = DateTime.UtcNow.AddHours(8),
+            Expires = DateTime.UtcNow.AddHours(hours),
             SigningCredentials = new  SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
         var token = tokenHandler.CreateToken(tokenDescriptor);

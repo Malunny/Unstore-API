@@ -63,39 +63,7 @@ public class UserManagementService : BaseService
         var dto = Mapper.Map<UserReadDto>(user);
         return new DataServiceResult<UserReadDto>(true, dto);
     }
-
-    public async Task<IServiceResult<UserReadDto>> UpdateAsync(UserUpdateDto updateDto)
-    {
-        if (updateDto.Id <= 0)
-            return new DataServiceResult<UserReadDto>(OperationStatus.InvalidInput, false);
-
-        var user = await Context.Users.FirstOrDefaultAsync(x => x.Id == updateDto.Id);
-
-        if (user == null)
-            return new DataServiceResult<UserReadDto>(OperationStatus.NotFound, false);
-
-        if (updateDto.Username != null && updateDto.Username != user.Username)
-        {
-            var usernameExists = await Context.Users.AnyAsync(x => x.Username == updateDto.Username && x.Id != updateDto.Id);
-            if (usernameExists)
-                return new DataServiceResult<UserReadDto>(OperationStatus.ValidationError, false);
-        }
-
-        if (updateDto.Email != null && updateDto.Email != user.Email)
-        {
-            var emailExists = await Context.Users.AnyAsync(x => x.Email == updateDto.Email && x.Id != updateDto.Id);
-            if (emailExists)
-                return new DataServiceResult<UserReadDto>(OperationStatus.ValidationError, false);
-        }
-
-        Mapper.Map(updateDto, user);
-        Context.Users.Update(user);
-        await Context.SaveChangesAsync();
-
-        var dto = Mapper.Map<UserReadDto>(user);
-        return new DataServiceResult<UserReadDto>(OperationStatus.Updated, true, dto);
-    }
-
+    
     public async Task<IServiceResult<bool>> DeleteAsync(int id)
     {
         if (id <= 0)

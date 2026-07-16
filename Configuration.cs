@@ -5,12 +5,13 @@ public static class Configuration
     // TOKEN - Json Web Token
     public static string JwtKey { get; set; }
     public static string ApiKey { get; set; }
+    public static int TokenExpirationTimeHours { get; set; } = 4;
 
     public static string RoleName(RolesNames role)
     {
         return role switch
         {
-            RolesNames.Client => "Client",
+            RolesNames.Normal => "Normal",
             RolesNames.Seller => "Seller",
             RolesNames.ServiceProvider => "ServiceProvider",
             RolesNames.Manager => "Manager",
@@ -21,9 +22,9 @@ public static class Configuration
 }
 public enum RolesNames
 {
-    Client,
+    Normal,
     Seller,
     ServiceProvider,
     Manager,
-    Administrator
+    Administrator,
 }
