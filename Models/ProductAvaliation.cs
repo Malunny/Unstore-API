@@ -1,6 +1,6 @@
 ﻿namespace Unstore.Models;
 
-public class ProductAvaliation : BaseModel
+public class ProductAvaliation
 {
     public string Description { get; set; }
     public short Stars { get; set; }

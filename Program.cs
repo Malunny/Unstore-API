@@ -6,20 +6,31 @@ using Unstore;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using Unstore.Models;
+using Unstore.Services.Account;
+using Unstore.Services.CommercialUser;
+using Unstore.Services.Product;
+using Unstore.Services.User;
 
 var builder = WebApplication.CreateBuilder(args);
 
 ConfigureKeysAndTokens();
 AddAuthentication();
-
+builder.Services.AddOpenApi();
 AddServices();
 ConfigureDbContext();
 
-var app = builder.Build();  
+var app = builder.Build();
 
 app.UseCors(policy => policy.WithOrigins("http://127.0.0.1:5500").AllowAnyMethod().AllowAnyHeader());
+
+if (app.Environment.IsDevelopment())
+{
+    Configuration.TokenExpirationTimeHours = 96;
+    app.MapOpenApi();
+    app.UseSwaggerUI(options => {options.SwaggerEndpoint("/openapi/v1.json", "Unstore API v1");});    
+}
+else
+    app.UseExceptionHandler();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -30,19 +41,24 @@ app.Run();
 
 void AddServices()
 {
-    builder.Services.AddTransient<AccountService>();
-    builder.Services.AddScoped<ClientService>();
-    builder.Services.AddScoped<EmployeeService>();
-    builder.Services.AddScoped<PositionService>();
+    builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+    builder.Services.AddProblemDetails();
+    
+    builder.Services.AddScoped<UserService>();
     builder.Services.AddScoped<ProductService>();
-    builder.Services.AddScoped<RoleService>();
-    builder.Services.AddScoped<ServiceService>();
-    builder.Services.AddScoped<ToolService>();
-    builder.Services.AddScoped<ToolTagService>();
-    builder.Services.AddTransient<TokenService>();
+    builder.Services.AddScoped<AccountService>();
+    builder.Services.AddScoped<CommercialAccountService>();
+    builder.Services.AddScoped<CommercialUserActionService>();
+    builder.Services.AddScoped<UserVerificationService>();
+    builder.Services.AddScoped<AuthorizationService>();
+    builder.Services.AddScoped<UserPurchaseService>();
+    builder.Services.AddSingleton<IServiceResultFactory, DataServiceResultFactory>();
+    builder.Services.AddTransient<ITokenService, JwtTokenService>();
+    
     builder.Services.AddAutoMapper(typeof(MappingProfile));
-
+    
     builder.Services.AddMemoryCache();
+    
     builder.Services
         .AddControllers()
         .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true)

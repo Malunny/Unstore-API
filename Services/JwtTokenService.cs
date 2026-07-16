@@ -1,0 +1,30 @@
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using Unstore.Models;
+
+namespace Unstore.Services;
+
+public class JwtTokenService : ITokenService
+{
+    public string GenerateToken(Models.User user)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(Configuration.JwtKey);
+        var roles = string.Join(", ",  user.Roles.Select(x => x.Name));
+        var hours = Configuration.TokenExpirationTimeHours;
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new (ClaimTypes.Name, user.Username),
+                    new (ClaimTypes.Role, roles)
+                }),
+            Expires = DateTime.UtcNow.AddHours(hours),
+            SigningCredentials = new  SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
+    }
+}
