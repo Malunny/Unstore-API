@@ -78,9 +78,6 @@ public partial class UserController
         [FromServices] AccountService accountService)
     {
         var username = User.Identity?.Name;
-
-        Console.WriteLine("le update");
-        Console.WriteLine(JsonSerializer.Serialize(userUpdateDto));
         
         if (username == null)
             return Unauthorized();
@@ -94,7 +91,8 @@ public partial class UserController
     [HttpGet("v1/user")]
     public IActionResult GetUsers([FromServices] AppDbContext db)
     {
-        return Ok(db.Users.Include(x => x.Addresses).AsNoTracking());
+        return Ok(db.Users.Include(x => x.Addresses)
+            .Include(x => x.Roles).AsNoTracking());
     }
     
 }
