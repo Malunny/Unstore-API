@@ -24,7 +24,8 @@ public partial class AccountService : BaseService
 
     public async Task<IServiceResult<string>> TryLoginAsync(UserLoginDto userLogin)
     {
-        var user = await Context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Email == userLogin.Email);
+        var user = await Context.Users
+            .Include(user => user.Roles).AsNoTracking().FirstOrDefaultAsync(x => x.Email == userLogin.Email);
 
         if (user == null)
             return _serviceResultFactory.Failure<string>(OperationStatus.NotFound);
@@ -42,16 +43,22 @@ public partial class AccountService : BaseService
     public async Task<IServiceResult<bool>> TryRegisterAsync(UserCreateDtos userRegister)
     {
         bool exists = Context.Users.Any(x => userRegister.Username == x.Username || userRegister.Email == x.Email);
-        
+
         if (exists)
             return _serviceResultFactory.Failure<bool>(OperationStatus.UserAlreadyExists);
-        
+
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(userRegister.Password);
         var userToCreate = Mapper.Map<UserCreateDtos, Models.User>(userRegister);
+        var normalUserRole =
+            await Context.Roles.FirstAsync(role => role.Name == Configuration.RoleName(RolesNames.Normal));
+
         userToCreate.PasswordHash = hashedPassword;
         userToCreate.Active = true;
+        userToCreate.Roles = new List<Models.Role> {
+            normalUserRole
+        };
 
-        await Context.Users.AddAsync(userToCreate);
+    await Context.Users.AddAsync(userToCreate);
         await Context.SaveChangesAsync();
         
         return _serviceResultFactory.Success(OperationStatus.Created, true);
