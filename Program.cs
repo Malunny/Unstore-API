@@ -61,7 +61,12 @@ void AddServices()
     
     builder.Services
         .AddControllers()
-        .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true)
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.WriteIndented = true;
+            options.JsonSerializerOptions.ReferenceHandler =
+                System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        })
         .ConfigureApiBehaviorOptions(options => { options.SuppressModelStateInvalidFilter = true; });
 }
 void ConfigureKeysAndTokens()
