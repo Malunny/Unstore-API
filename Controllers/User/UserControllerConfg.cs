@@ -5,7 +5,4 @@ namespace Unstore.Controllers.User;
 
 [ApiController]
 [Authorize(Roles = "Administrator")]
-public partial class UserController : ControllerBase
-{
-    
-}
+public partial class UserController : ControllerBase { }
