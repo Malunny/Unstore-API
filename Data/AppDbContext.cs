@@ -33,6 +33,37 @@ public class AppDbContext : DbContext
     {
         base.OnConfiguring(optionsBuilder);
         optionsBuilder.UseSqlite("Data Source=app.db");
+
+        optionsBuilder.UseSeeding((context, _) =>
+        {
+            var hasData = context.Set<Role>().Any();
+
+            Console.WriteLine(hasData);
+            
+            if (!hasData)
+            {
+                context.Set<Role>().AddRange([
+                    new Role { Name = "Normal", Description = "Buying, Search and other features. A Regular normal user."},
+                    new Role { Name = "Seller", Description = "Posting, Selling and managing Products." },
+                    new Role { Name = "ServiceProvider", Description = "Posting, Selling and managing Services." },
+                    new Role { Name = "Manager", Description = "Managing Products, Users, Interactions." },
+                    new Role { Name = "Administrator", Description = "Administrating Eveything." },
+                ]);
+                
+                context.SaveChanges();
+                var adminRoleTracked = context.Set<Role>().First(role => role.Name == "Administrator");
+        
+                context.Set<User>().Add(new User {
+                    Username = "Administration",
+                    Name = "Administration",
+                    Email = "admin.unstore@unstore.com",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin"),
+                    Roles = [ adminRoleTracked ]
+                });
+
+                context.SaveChanges();
+            }
+        });
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
