@@ -1,14 +1,15 @@
-using AutoMapper;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
 using Unstore.DTOs;
+using Unstore.DTOs.Mapping;
 using Unstore.Models;
 
 namespace Unstore.Services.User;
 
 public class UserManagementService : BaseService
 {
-    public UserManagementService(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public UserManagementService(AppDbContext dbContext) : base(dbContext)
     {
     }
 
@@ -18,7 +19,7 @@ public class UserManagementService : BaseService
             .AsNoTracking()
             .Where(x => x.Active)
             .ToListAsync();
-        var dtos = Mapper.Map<List<UserReadDto>>(users);
+        var dtos = users.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<UserReadDto>>(true, dtos);
     }
 
@@ -32,7 +33,7 @@ public class UserManagementService : BaseService
         if (user == null)
             return new DataServiceResult<UserReadDto>(OperationStatus.NotFound, false);
 
-        var dto = Mapper.Map<UserReadDto>(user);
+        var dto = user.MapToDto();
         return new DataServiceResult<UserReadDto>(true, dto);
     }
 
@@ -46,7 +47,7 @@ public class UserManagementService : BaseService
         if (user == null)
             return new DataServiceResult<UserReadDto>(OperationStatus.NotFound, false);
 
-        var dto = Mapper.Map<UserReadDto>(user);
+        var dto = user.MapToDto();
         return new DataServiceResult<UserReadDto>(true, dto);
     }
 
@@ -60,7 +61,7 @@ public class UserManagementService : BaseService
         if (user == null)
             return new DataServiceResult<UserReadDto>(OperationStatus.NotFound, false);
 
-        var dto = Mapper.Map<UserReadDto>(user);
+        var dto = user.MapToDto();
         return new DataServiceResult<UserReadDto>(true, dto);
     }
     

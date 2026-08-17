@@ -26,4 +26,11 @@ public static class ProductDtoMapping
             Active = product.Active,
             PublishedDate = product.PublishedDate
         };
+
+    public static void MapFromUpdateDto(this Product product, ProductUpdateDto dto)
+    {
+        if (!string.IsNullOrWhiteSpace(dto.Name)) product.Name = dto.Name;
+        if (!string.IsNullOrWhiteSpace(dto.Description)) product.Description = dto.Description;
+        product.Value = dto.Value;
+    }
 }

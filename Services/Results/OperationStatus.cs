@@ -42,7 +42,7 @@ namespace Unstore.Services
                 OperationStatus.ModelStateErrors => new ObjectResult(obj) { StatusCode = StatusCodes.Status400BadRequest },
                 _ => new ObjectResult(obj) { StatusCode = StatusCodes.Status500InternalServerError }
             };
-
+        
         public static bool IsBadResult(this OperationStatus status)
         {
             int value = (int)status;

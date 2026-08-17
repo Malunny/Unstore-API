@@ -1,7 +1,8 @@
-using AutoMapper;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
 using Unstore.DTOs;
+using Unstore.DTOs.Mapping;
 using Unstore.Models;
 
 namespace Unstore.Services;
@@ -9,7 +10,7 @@ namespace Unstore.Services;
 public class UserDocumentService : BaseService
 {
     private readonly IServiceResultFactory _serviceResultFactory;
-    public UserDocumentService(AppDbContext dbContext, IMapper mapper, IServiceResultFactory serviceResultFactory) : base(dbContext, mapper)
+    public UserDocumentService(AppDbContext dbContext, IServiceResultFactory serviceResultFactory) : base(dbContext)
     {
         _serviceResultFactory = serviceResultFactory;
     }
@@ -27,7 +28,7 @@ public class UserDocumentService : BaseService
         if (!documentTypeExists)
             return _serviceResultFactory.Failure<UserDocumentCreateDto>(OperationStatus.NotFound);
         
-        var newDocument = Mapper.Map<UserDocumentCreateDto, UserDocument>(createDto);
+        var newDocument = createDto.MapToModel();
         await Context.UserDocuments.AddAsync(newDocument);
         await Context.SaveChangesAsync();
 
@@ -47,7 +48,7 @@ public class UserDocumentService : BaseService
         if (document == null)
             return _serviceResultFactory.Failure<UserDocumentReadDto>(OperationStatus.NotFound);
 
-        var dto = Mapper.Map<UserDocument, UserDocumentReadDto>(document);
+        var dto = document.MapToDto();
         return _serviceResultFactory.Success(dto);
     }
     
@@ -65,7 +66,7 @@ public class UserDocumentService : BaseService
         if (documents.Count == 0)
             return _serviceResultFactory.Failure<List<UserDocumentReadDto>>(OperationStatus.NotFound);
 
-        var dtos = Mapper.Map<List<UserDocument>, List<UserDocumentReadDto>>(documents);
+        var dtos = documents.Select(x => x.MapToDto()).ToList();
         return _serviceResultFactory.Success(dtos);
     }
     

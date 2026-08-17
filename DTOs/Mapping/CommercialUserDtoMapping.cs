@@ -24,4 +24,10 @@ public static partial class DtoMapping
         dto.CommercialName = model.CommercialName;
         return dto;
     }
+
+    public static void MapFromUpdateDto(this CommercialUser model, CommercialUserUpdateDto dto)
+    {
+        if (!string.IsNullOrWhiteSpace(dto.CommercialName)) model.CommercialName = dto.CommercialName;
+        if (!string.IsNullOrWhiteSpace(dto.About)) model.About = dto.About;
+    }
 }

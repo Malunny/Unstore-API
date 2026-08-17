@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
@@ -32,16 +33,21 @@ public class CommercialAccountService([FromServices] AppDbContext context, [From
     public async Task<IServiceResult<CommercialUserCreateDto>> TryRegisterCommercialAccountAsync(CommercialUserCreateDto dto, 
         string username)
     {
-        var userIdUsername = await context.Users.AsNoTracking()
-            .Select(x => new {x.Id, x.Username})
+        var user = await context.Users.AsNoTracking()
             .FirstOrDefaultAsync(x => x.Username == username);
         
-        if (userIdUsername is null) 
+        if (user is null) 
             return serviceResultFactory.Failure<CommercialUserCreateDto>(OperationStatus.NotFound);
-
+        
+        if (await context.CommercialUsers.AnyAsync(commercialUser => commercialUser.OriginalUserId == user.Id))
+            return  serviceResultFactory.Failure<CommercialUserCreateDto>(OperationStatus.Unauthorized);
+        
+        var sellerRole = await context.Roles.FirstAsync(x => x.Name == Configuration.RoleName(RolesNames.Seller));
+        user.Roles.Add(sellerRole);
+        
         var commercialUser = dto.MapToModel();
         
-        commercialUser.OriginalUserId = userIdUsername.Id;
+        commercialUser.OriginalUserId = user.Id;
         dto.OriginalUserId = commercialUser.Id;
 
         await context.CommercialUsers.AddAsync(commercialUser);

@@ -1,4 +1,5 @@
-using AutoMapper;
+using System.Linq;
+using Unstore.DTOs.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
 using Unstore.DTOs;
@@ -8,14 +9,14 @@ namespace Unstore.Services.DocumentType;
 
 public class DocumentTypeService : BaseService
 {
-    public DocumentTypeService(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public DocumentTypeService(AppDbContext dbContext) : base(dbContext)
     {
     }
 
     public async Task<IServiceResult<List<DocumentTypeReadDto>>> GetAllAsync()
     {
         var documentTypes = await Context.DocumentTypes.AsNoTracking().ToListAsync();
-        var dtos = Mapper.Map<List<DocumentTypeReadDto>>(documentTypes);
+        var dtos = documentTypes.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<DocumentTypeReadDto>>(true, dtos);
     }
 
@@ -29,7 +30,7 @@ public class DocumentTypeService : BaseService
         if (documentType == null)
             return new DataServiceResult<DocumentTypeReadDto>(OperationStatus.NotFound, false);
 
-        var dto = Mapper.Map<DocumentTypeReadDto>(documentType);
+        var dto = documentType.MapToDto();
         return new DataServiceResult<DocumentTypeReadDto>(true, dto);
     }
 
@@ -42,12 +43,12 @@ public class DocumentTypeService : BaseService
         if (keyExists)
             return new DataServiceResult<DocumentTypeReadDto>(OperationStatus.ValidationError, false);
 
-        var documentType = Mapper.Map<Models.DocumentType>(createDto);
+        var documentType = createDto.MapToModel();
 
         await Context.DocumentTypes.AddAsync(documentType);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<DocumentTypeReadDto>(documentType);
+        var dto = documentType.MapToDto();
         return new DataServiceResult<DocumentTypeReadDto>(OperationStatus.Created, true, dto);
     }
 
@@ -68,11 +69,11 @@ public class DocumentTypeService : BaseService
                 return new DataServiceResult<DocumentTypeReadDto>(OperationStatus.ValidationError, false);
         }
 
-        Mapper.Map(updateDto, documentType);
+        documentType.MapFromUpdateDto(updateDto);
         Context.DocumentTypes.Update(documentType);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<DocumentTypeReadDto>(documentType);
+        var dto = documentType.MapToDto();
         return new DataServiceResult<DocumentTypeReadDto>(OperationStatus.Updated, true, dto);
     }
 
