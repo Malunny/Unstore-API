@@ -13,10 +13,10 @@ public class ProductAvaliationModelConfiguration : IEntityTypeConfiguration<Prod
         builder.Property(x => x.Description)
             .IsRequired()
             .HasMaxLength(500);
-        
+
         builder.Property(x => x.Stars)
             .IsRequired()
-            .HasColumnType("TINYINT");
+            .HasColumnType("smallint");
 
         builder.HasOne(x => x.Client)
             .WithMany(y => y.ProductAvaliations)

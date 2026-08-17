@@ -12,7 +12,7 @@ public class DocumentTypeModelConfiguration : IEntityTypeConfiguration<DocumentT
 
         builder.Property(x => x.Id)
             .IsRequired()
-            .UseAutoincrement();
+            .UseIdentityByDefaultColumn();
         
         builder.Property(x => x.Key)
             .IsRequired()

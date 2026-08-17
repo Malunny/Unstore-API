@@ -12,7 +12,7 @@ public class ProductModelConfiguration : IEntityTypeConfiguration<Product>
         
         builder.Property(x => x.Id)
             .IsRequired()
-            .UseAutoincrement();
+            .UseIdentityByDefaultColumn();
 
         builder.Property(x => x.Name)
             .IsRequired()
