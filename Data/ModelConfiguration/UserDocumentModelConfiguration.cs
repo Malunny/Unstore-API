@@ -12,7 +12,7 @@ public class UserDocumentModelConfiguration : IEntityTypeConfiguration<UserDocum
         
         builder.Property(x => x.Id)
             .IsRequired()
-            .UseAutoincrement();
+            .UseIdentityByDefaultColumn();
 
         builder.Property(x => x.Information)
             .HasMaxLength(50)

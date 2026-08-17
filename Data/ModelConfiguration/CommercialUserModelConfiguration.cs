@@ -12,7 +12,7 @@ public class CommercialUserModelConfiguration : IEntityTypeConfiguration<Commerc
 
         builder.Property(x => x.Id)
             .IsRequired()
-            .UseAutoincrement();
+            .UseIdentityByDefaultColumn();
         
         builder.Property(x => x.CommercialName)
             .IsRequired()

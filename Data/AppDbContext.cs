@@ -1,6 +1,5 @@
 using System.Net;
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 using Unstore.Models;
 
 namespace Unstore.Data;
@@ -28,19 +27,21 @@ public class AppDbContext : DbContext
     public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<ProductAvaliation> ProductAvaliations { get; set; }
     public DbSet<ProductPurchase> ProductPurchases { get; set; }
+
+    public AppDbContext(DbContextOptions<AppDbContext> optionsBuilder) : base(optionsBuilder)
+    {
+        
+    }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.UseSqlite("Data Source=app.db");
 
         optionsBuilder.UseSeeding((context, _) =>
         {
-            var hasData = context.Set<Role>().Any();
-
-            Console.WriteLine(hasData);
+            var roleHasData = context.Set<Role>().Any();
             
-            if (!hasData)
+            if (!roleHasData)
             {
                 context.Set<Role>().AddRange([
                     new Role { Name = "Normal", Description = "Buying, Search and other features. A Regular normal user."},
@@ -60,9 +61,19 @@ public class AppDbContext : DbContext
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin"),
                     Roles = [ adminRoleTracked ]
                 });
-
-                context.SaveChanges();
             }
+            
+            var addressTypeHasData = context.Set<AddressType>().Any();
+            
+            if (!addressTypeHasData)
+            {
+                context.Set<AddressType>().AddRange([
+                    new AddressType { Key = "Home", Description = "Your home, apartment or property."},
+                    new AddressType { Key = "Work", Description = "For your workplace."},
+                ]);
+            }
+            
+            context.SaveChanges();
         });
     }
 

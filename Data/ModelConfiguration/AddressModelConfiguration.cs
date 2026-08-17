@@ -10,7 +10,7 @@ public class AddressModelConfiguration : IEntityTypeConfiguration<Address>
     {
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id)
-            .UseAutoincrement();
+            .UseIdentityByDefaultColumn();
 
         builder.Property(x => x.Street)
             .IsRequired()

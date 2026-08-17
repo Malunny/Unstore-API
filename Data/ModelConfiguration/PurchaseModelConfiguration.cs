@@ -12,7 +12,7 @@ public class PurchaseModelConfiguration : IEntityTypeConfiguration<Purchase>
         
         builder.Property(x => x.Id)
             .IsRequired()
-            .UseAutoincrement();
+            .UseIdentityByDefaultColumn();
 
         builder.Property(x => x.BoughtDate).IsRequired();
         
