@@ -1,4 +1,5 @@
-using AutoMapper;
+using System.Linq;
+using Unstore.DTOs.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
 using Unstore.DTOs;
@@ -8,14 +9,14 @@ namespace Unstore.Services.Service;
 
 public class ServiceOptionService : BaseService
 {
-    public ServiceOptionService(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public ServiceOptionService(AppDbContext dbContext) : base(dbContext)
     {
     }
 
     public async Task<IServiceResult<List<ServiceServiceOptionReadDto>>> GetAllAsync()
     {
         var options = await Context.ServiceOptions.AsNoTracking().ToListAsync();
-        var dtos = Mapper.Map<List<ServiceServiceOptionReadDto>>(options);
+        var dtos = options.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<ServiceServiceOptionReadDto>>(true, dtos);
     }
 
@@ -29,7 +30,7 @@ public class ServiceOptionService : BaseService
         if (option == null)
             return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.NotFound, false);
 
-        var dto = Mapper.Map<ServiceServiceOptionReadDto>(option);
+        var dto = option.MapToDto();
         return new DataServiceResult<ServiceServiceOptionReadDto>(true, dto);
     }
 
@@ -43,7 +44,7 @@ public class ServiceOptionService : BaseService
             .Where(x => x.ServiceId == serviceId)
             .ToListAsync();
 
-        var dtos = Mapper.Map<List<ServiceServiceOptionReadDto>>(options);
+        var dtos = options.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<ServiceServiceOptionReadDto>>(true, dtos);
     }
 
@@ -56,12 +57,12 @@ public class ServiceOptionService : BaseService
         if (!serviceExists)
             return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.NotFound, false);
 
-        var option = Mapper.Map<ServiceOption>(createDto);
+        var option = createDto.MapToModel();
 
         await Context.ServiceOptions.AddAsync(option);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<ServiceServiceOptionReadDto>(option);
+        var dto = option.MapToDto();
         return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.Created, true, dto);
     }
 
@@ -75,11 +76,11 @@ public class ServiceOptionService : BaseService
         if (option == null)
             return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.NotFound, false);
 
-        Mapper.Map(updateDto, option);
+        option.MapFromUpdateDto(updateDto);
         Context.ServiceOptions.Update(option);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<ServiceServiceOptionReadDto>(option);
+        var dto = option.MapToDto();
         return new DataServiceResult<ServiceServiceOptionReadDto>(OperationStatus.Updated, true, dto);
     }
 

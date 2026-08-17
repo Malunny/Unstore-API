@@ -1,4 +1,5 @@
-using AutoMapper;
+using System.Linq;
+using Unstore.DTOs.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
 using Unstore.DTOs;
@@ -8,14 +9,14 @@ namespace Unstore.Services.AddressType;
 
 public class AddressTypeService : BaseService
 {
-    public AddressTypeService(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public AddressTypeService(AppDbContext dbContext) : base(dbContext)
     {
     }
 
     public async Task<IServiceResult<List<AddressTypeReadDto>>> GetAllAsync()
     {
         var addressTypes = await Context.AddressTypes.AsNoTracking().ToListAsync();
-        var dtos = Mapper.Map<List<AddressTypeReadDto>>(addressTypes);
+        var dtos = addressTypes.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<AddressTypeReadDto>>(true, dtos);
     }
 
@@ -29,7 +30,7 @@ public class AddressTypeService : BaseService
         if (addressType == null)
             return new DataServiceResult<AddressTypeReadDto>(OperationStatus.NotFound, false);
 
-        var dto = Mapper.Map<AddressTypeReadDto>(addressType);
+        var dto = addressType.MapToDto();
         return new DataServiceResult<AddressTypeReadDto>(true, dto);
     }
 
@@ -42,12 +43,12 @@ public class AddressTypeService : BaseService
         if (keyExists)
             return new DataServiceResult<AddressTypeReadDto>(OperationStatus.ValidationError, false);
 
-        var addressType = Mapper.Map<Models.AddressType>(createDto);
+        var addressType = createDto.MapToModel();
 
         await Context.AddressTypes.AddAsync(addressType);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<AddressTypeReadDto>(addressType);
+        var dto = addressType.MapToDto();
         return new DataServiceResult<AddressTypeReadDto>(OperationStatus.Created, true, dto);
     }
 
@@ -68,11 +69,11 @@ public class AddressTypeService : BaseService
                 return new DataServiceResult<AddressTypeReadDto>(OperationStatus.ValidationError, false);
         }
 
-        Mapper.Map(updateDto, addressType);
+        addressType.MapFromUpdateDto(updateDto);
         Context.AddressTypes.Update(addressType);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<AddressTypeReadDto>(addressType);
+        var dto = addressType.MapToDto();
         return new DataServiceResult<AddressTypeReadDto>(OperationStatus.Updated, true, dto);
     }
 

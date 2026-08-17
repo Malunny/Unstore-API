@@ -1,4 +1,5 @@
-using AutoMapper;
+using System.Linq;
+using Unstore.DTOs.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
 using Unstore.DTOs;
@@ -8,7 +9,7 @@ namespace Unstore.Services.CommercialUser;
 
 public class CommercialUserService : BaseService
 {
-    public CommercialUserService(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public CommercialUserService(AppDbContext dbContext) : base(dbContext)
     {
     }
 
@@ -18,7 +19,7 @@ public class CommercialUserService : BaseService
             .AsNoTracking()
             .Where(x => x.Active)
             .ToListAsync();
-        var dtos = Mapper.Map<List<CommercialUserReadDto>>(commercialUsers);
+        var dtos = commercialUsers.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<CommercialUserReadDto>>(true, dtos);
     }
 
@@ -34,7 +35,7 @@ public class CommercialUserService : BaseService
         if (commercialUser == null)
             return new DataServiceResult<CommercialUserReadDto>(OperationStatus.NotFound, false);
 
-        var dto = Mapper.Map<CommercialUserReadDto>(commercialUser);
+        var dto = commercialUser.MapToDto();
         return new DataServiceResult<CommercialUserReadDto>(true, dto);
     }
 
@@ -52,13 +53,13 @@ public class CommercialUserService : BaseService
         if (commercialUserExists)
             return new DataServiceResult<CommercialUserReadDto>(OperationStatus.ValidationError, false);
 
-        var commercialUser = Mapper.Map<Models.CommercialUser>(createDto);
+        var commercialUser = createDto.MapToModel();
         commercialUser.Active = true;
 
         await Context.CommercialUsers.AddAsync(commercialUser);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<CommercialUserReadDto>(commercialUser);
+        var dto = commercialUser.MapToDto();
         return new DataServiceResult<CommercialUserReadDto>(OperationStatus.Created, true, dto);
     }
 
@@ -72,11 +73,11 @@ public class CommercialUserService : BaseService
         if (commercialUser == null)
             return new DataServiceResult<CommercialUserReadDto>(OperationStatus.NotFound, false);
 
-        Mapper.Map(updateDto, commercialUser);
+        commercialUser.MapFromUpdateDto(updateDto);
         Context.CommercialUsers.Update(commercialUser);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<CommercialUserReadDto>(commercialUser);
+        var dto = commercialUser.MapToDto();
         return new DataServiceResult<CommercialUserReadDto>(OperationStatus.Updated, true, dto);
     }
 

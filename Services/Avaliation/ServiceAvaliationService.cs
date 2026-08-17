@@ -1,4 +1,5 @@
-using AutoMapper;
+using System.Linq;
+using Unstore.DTOs.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
 using Unstore.DTOs;
@@ -8,14 +9,14 @@ namespace Unstore.Services.Avaliation;
 
 public class ServiceAvaliationService : BaseService
 {
-    public ServiceAvaliationService(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public ServiceAvaliationService(AppDbContext dbContext) : base(dbContext)
     {
     }
 
     public async Task<IServiceResult<List<ServiceAvaliationReadDto>>> GetAllAsync()
     {
         var avaliations = await Context.ServiceAvaliations.AsNoTracking().ToListAsync();
-        var dtos = Mapper.Map<List<ServiceAvaliationReadDto>>(avaliations);
+        var dtos = avaliations.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<ServiceAvaliationReadDto>>(true, dtos);
     }
 
@@ -31,7 +32,7 @@ public class ServiceAvaliationService : BaseService
         if (avaliation == null)
             return new DataServiceResult<ServiceAvaliationReadDto>(OperationStatus.NotFound, false);
 
-        var dto = Mapper.Map<ServiceAvaliationReadDto>(avaliation);
+        var dto = avaliation.MapToDto();
         return new DataServiceResult<ServiceAvaliationReadDto>(true, dto);
     }
 
@@ -45,7 +46,7 @@ public class ServiceAvaliationService : BaseService
             .Where(x => x.ServiceId == serviceId)
             .ToListAsync();
 
-        var dtos = Mapper.Map<List<ServiceAvaliationReadDto>>(avaliations);
+        var dtos = avaliations.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<ServiceAvaliationReadDto>>(true, dtos);
     }
 
@@ -62,12 +63,12 @@ public class ServiceAvaliationService : BaseService
         if (!serviceExists)
             return new DataServiceResult<ServiceAvaliationReadDto>(OperationStatus.NotFound, false);
 
-        var avaliation = Mapper.Map<ServiceAvaliation>(createDto);
+        var avaliation = createDto.MapToModel();
 
         await Context.ServiceAvaliations.AddAsync(avaliation);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<ServiceAvaliationReadDto>(avaliation);
+        var dto = avaliation.MapToDto();
         return new DataServiceResult<ServiceAvaliationReadDto>(OperationStatus.Created, true, dto);
     }
 

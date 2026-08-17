@@ -1,4 +1,5 @@
-using AutoMapper;
+using System.Linq;
+using Unstore.DTOs.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
 using Unstore.DTOs;
@@ -8,14 +9,14 @@ namespace Unstore.Services.Role;
 
 public class RoleService : BaseService
 {
-    public RoleService(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public RoleService(AppDbContext dbContext) : base(dbContext)
     {
     }
 
     public async Task<IServiceResult<List<RoleReadDto>>> GetAllAsync()
     {
         var roles = await Context.Roles.AsNoTracking().ToListAsync();
-        var dtos = Mapper.Map<List<RoleReadDto>>(roles);
+        var dtos = roles.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<RoleReadDto>>(true, dtos);
     }
 
@@ -29,7 +30,7 @@ public class RoleService : BaseService
         if (role == null)
             return new DataServiceResult<RoleReadDto>(OperationStatus.NotFound, false);
 
-        var dto = Mapper.Map<RoleReadDto>(role);
+        var dto = role.MapToDto();
         return new DataServiceResult<RoleReadDto>(true, dto);
     }
 
@@ -42,12 +43,12 @@ public class RoleService : BaseService
         if (roleExists)
             return new DataServiceResult<RoleReadDto>(OperationStatus.ValidationError, false);
 
-        var role = Mapper.Map<Models.Role>(createDto);
+        var role = createDto.MapToModel();
 
         await Context.Roles.AddAsync(role);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<RoleReadDto>(role);
+        var dto = role.MapToDto();
         return new DataServiceResult<RoleReadDto>(OperationStatus.Created, true, dto);
     }
 
@@ -68,11 +69,11 @@ public class RoleService : BaseService
                 return new DataServiceResult<RoleReadDto>(OperationStatus.ValidationError, false);
         }
 
-        Mapper.Map(updateDto, role);
+        role.MapFromUpdateDto(updateDto);
         Context.Roles.Update(role);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<RoleReadDto>(role);
+        var dto = role.MapToDto();
         return new DataServiceResult<RoleReadDto>(OperationStatus.Updated, true, dto);
     }
 

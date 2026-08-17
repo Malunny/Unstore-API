@@ -1,4 +1,4 @@
-using AutoMapper;
+using Unstore.DTOs.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
 using Unstore.DTOs;
@@ -8,14 +8,14 @@ namespace Unstore.Services.Service;
 
 public class ServiceRequestService : BaseService
 {
-    public ServiceRequestService(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public ServiceRequestService(AppDbContext dbContext) : base(dbContext)
     {
     }
 
     public async Task<IServiceResult<List<ServiceServiceRequestReadDto>>> GetAllAsync()
     {
         var requests = await Context.ServiceRequests.AsNoTracking().ToListAsync();
-        var dtos = Mapper.Map<List<ServiceServiceRequestReadDto>>(requests);
+        var dtos = requests.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<ServiceServiceRequestReadDto>>(true, dtos);
     }
 
@@ -29,7 +29,7 @@ public class ServiceRequestService : BaseService
         if (request == null)
             return new DataServiceResult<ServiceServiceRequestReadDto>(OperationStatus.NotFound, false);
 
-        var dto = Mapper.Map<ServiceServiceRequestReadDto>(request);
+        var dto = request.MapToDto();
         return new DataServiceResult<ServiceServiceRequestReadDto>(true, dto);
     }
 
@@ -43,7 +43,7 @@ public class ServiceRequestService : BaseService
             .Where(x => x.ServiceId == serviceId)
             .ToListAsync();
 
-        var dtos = Mapper.Map<List<ServiceServiceRequestReadDto>>(requests);
+        var dtos = requests.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<ServiceServiceRequestReadDto>>(true, dtos);
     }
 
@@ -57,7 +57,7 @@ public class ServiceRequestService : BaseService
             .Where(x => x.RequesterId == requesterId)
             .ToListAsync();
 
-        var dtos = Mapper.Map<List<ServiceServiceRequestReadDto>>(requests);
+        var dtos = requests.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<ServiceServiceRequestReadDto>>(true, dtos);
     }
 
@@ -74,13 +74,13 @@ public class ServiceRequestService : BaseService
         if (!requesterExists)
             return new DataServiceResult<ServiceServiceRequestReadDto>(OperationStatus.NotFound, false);
 
-        var request = Mapper.Map<ServiceRequest>(createDto);
+        var request = createDto.MapToModel();
         request.RequestedAt = DateTime.Now;
 
         await Context.ServiceRequests.AddAsync(request);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<ServiceServiceRequestReadDto>(request);
+        var dto = request.MapToDto();
         return new DataServiceResult<ServiceServiceRequestReadDto>(OperationStatus.Created, true, dto);
     }
 
@@ -94,11 +94,11 @@ public class ServiceRequestService : BaseService
         if (request == null)
             return new DataServiceResult<ServiceServiceRequestReadDto>(OperationStatus.NotFound, false);
 
-        Mapper.Map(updateDto, request);
+        request.MapFromUpdateDto(updateDto);
         Context.ServiceRequests.Update(request);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<ServiceServiceRequestReadDto>(request);
+        var dto = request.MapToDto();
         return new DataServiceResult<ServiceServiceRequestReadDto>(OperationStatus.Updated, true, dto);
     }
 

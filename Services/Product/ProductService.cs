@@ -1,4 +1,5 @@
-using AutoMapper;
+using System.Linq;
+using Unstore.DTOs.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
 using Unstore.DTOs;
@@ -8,7 +9,7 @@ namespace Unstore.Services.Product;
 
 public class ProductService : BaseService
 {
-    public ProductService(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public ProductService(AppDbContext dbContext) : base(dbContext)
     {
     }
 
@@ -27,7 +28,7 @@ public class ProductService : BaseService
             .Skip(start)
             .Take(finish)
             .ToListAsync();
-        var dtos = Mapper.Map<List<ProductReadDto>>(products);
+        var dtos = products.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<ProductReadDto>>(true, dtos);
     }
 
@@ -41,7 +42,7 @@ public class ProductService : BaseService
         if (product == null)
             return new DataServiceResult<ProductReadDto>(OperationStatus.NotFound, false);
 
-        var dto = Mapper.Map<ProductReadDto>(product);
+        var dto = product.MapToDto();
         return new DataServiceResult<ProductReadDto>(true, dto);
     }
 
@@ -58,7 +59,8 @@ public class ProductService : BaseService
             return new DataServiceResult<ProductReadDto>(OperationStatus.InvalidInput, false);
         Console.WriteLine("-----------------x");
 
-        var product = Mapper.Map<Models.Product>(createDto);
+        // map to model (seller id set below)
+        var product = createDto.MapToModel(0);
         product.Active = true;
         product.SellerId = user.Id;
         product.Seller = user.CommercialUser;
@@ -66,7 +68,7 @@ public class ProductService : BaseService
         await Context.Products.AddAsync(product);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<ProductReadDto>(product);
+        var dto = product.MapToDto();
         return new DataServiceResult<ProductReadDto>(OperationStatus.Created, true, dto);
     }
 
@@ -80,11 +82,11 @@ public class ProductService : BaseService
         if (product == null)
             return new DataServiceResult<ProductReadDto>(OperationStatus.NotFound, false);
         
-        Mapper.Map(updateDto, product);
+        product.MapFromUpdateDto(updateDto);
         Context.Products.Update(product);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<ProductReadDto>(product);
+        var dto = product.MapToDto();
         return new DataServiceResult<ProductReadDto>(OperationStatus.Updated, true, dto);
     }
 

@@ -1,6 +1,8 @@
+using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Unstore.DTOs;
+using Unstore.DTOs.Mapping;
 using Unstore.Models;
 
 namespace Unstore.Services;
@@ -17,7 +19,7 @@ public partial class UserService
         if (user is null)
             return _serviceResultFactory.Failure<UserReadDto>(OperationStatus.NotFound);
 
-        UserReadDto userDto = Mapper.Map<Models.User, UserReadDto>(user);
+        UserReadDto userDto = user.MapToDto();
         
         return _serviceResultFactory.Success(userDto);
     }
@@ -32,7 +34,7 @@ public partial class UserService
         if (users.Count < ids.Length)
             return _serviceResultFactory.Failure<IEnumerable<UserReadDto>>(OperationStatus.NotFound);
 
-        List<UserReadDto> userDtos = Mapper.Map<List<Models.User>, List<UserReadDto>>(users);
+        List<UserReadDto> userDtos = users.Select(x => x.MapToDto()).ToList();
 
         return _serviceResultFactory.Success<IEnumerable<UserReadDto>>(userDtos);
     }
@@ -49,19 +51,22 @@ public partial class UserService
         if (user is null)
             return _serviceResultFactory.Failure<UserReadDto>(OperationStatus.NotFound);
 
-        UserReadDto userDto = Mapper.Map<Models.User, UserReadDto>(user);
+        UserReadDto userDto = user.MapToDto();
         
         return _serviceResultFactory.Success(userDto);
     }
 
     public async Task<IServiceResult<UserReadDto>> GetByUsernameAsync(string username)
-    {
-        Models.User? user = await Context.Users.FirstOrDefaultAsync(x => x.Username == username);
+    {   
+        Models.User? user = await Context.Users
+            .Include(user => user.Roles)
+            .Include(user => user.Addresses)
+            .FirstOrDefaultAsync(x => x.Username == username);
         
         if (user is null)
             return _serviceResultFactory.Failure<UserReadDto>(OperationStatus.NotFound);
 
-        UserReadDto userDto = Mapper.Map<Models.User, UserReadDto>(user);
+        UserReadDto userDto = user.MapToDto();
         
         return _serviceResultFactory.Success(userDto);
     }
