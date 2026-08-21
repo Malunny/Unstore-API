@@ -1,15 +1,12 @@
-using AutoMapper;
 using Unstore.Data;
 
 namespace Unstore.Services;
 
 public abstract class BaseService
 {
-    public readonly AppDbContext Context;
-    public readonly IMapper Mapper;
-    public BaseService(AppDbContext dbContext, IMapper mapper)
+    protected readonly AppDbContext Context;
+    public BaseService(AppDbContext dbContext)
     {
         Context = dbContext;
-        Mapper = mapper;
     }
 }

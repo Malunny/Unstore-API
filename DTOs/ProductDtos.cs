@@ -31,6 +31,10 @@ public record ProductCreateDto
     [MinLength(5, ErrorMessage = "Product description must be at least 5 characters long")]
     public string Description { get; set; }
     
+    [Required(ErrorMessage = "Product Categories are required")]
+    [MinLength(1, ErrorMessage = "Product Categories must be at least 1 character long")]
+    public ICollection<string> ProductCategories { get; set; }
+    
     [Required(ErrorMessage = "Product value is required")]
     [Range(0.01, double.MaxValue, ErrorMessage = "Product value must be greater than 0")]
     public decimal Value { get; set; }

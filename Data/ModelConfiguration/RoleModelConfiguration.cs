@@ -12,7 +12,7 @@ public class RoleModelConfiguration : IEntityTypeConfiguration<Role>
         
         builder.Property(x => x.Id)
             .IsRequired()
-            .UseAutoincrement();
+            .UseIdentityByDefaultColumn();
 
         builder.Property(x => x.Name)
             .IsRequired()

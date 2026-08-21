@@ -10,7 +10,8 @@ public static partial class DtoMapping
 
         dto.Id = userPurchase.Id;
         dto.UserId = userPurchase.UserId;
-        dto.AddressId = userPurchase.Address.Id;
+        dto.AddressId = userPurchase.AddressId;
+        dto.ProductsPurchases = userPurchase.ProductPurchases.MapToDto();
         dto.BoughtDate = userPurchase.BoughtDate;
         dto.TotalValue = userPurchase.TotalValue;
 

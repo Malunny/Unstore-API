@@ -7,16 +7,15 @@ using Unstore.Services.CommercialUser;
 
 namespace Unstore.Controllers.CommercialUser;
 
-[ApiController]
-public class CommercialUserAccountController : ControllerBase
+[Authorize]
+public class CommercialUserAccountController : UnstoreController
 {
-   [HttpPost("v1/user/commercial")]
-   [AllowAnonymous]
-   public async Task<IActionResult> CreateCommercialAccount([FromServices] CommercialAccountService service,
+   [HttpPost]
+   public async Task<IActionResult> Register([FromServices] CommercialAccountService service,
       [FromBody] CommercialUserCreateDto dto)
    {
       var username = User.Identity?.Name;
-
+      
       if (username == null)
          return Unauthorized();
 
@@ -25,8 +24,9 @@ public class CommercialUserAccountController : ControllerBase
       return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
    }
 
-   [HttpGet("v1/user/commercial")]
-   public async Task<IActionResult> GetOwnCommercialAccount([FromServices] CommercialAccountService service)
+   [HttpGet]
+   [Authorize(Roles = "Seller")]
+   public async Task<IActionResult> OwnCommercialInfo([FromServices] CommercialAccountService service)
    {
       var username = User.Identity?.Name;
          

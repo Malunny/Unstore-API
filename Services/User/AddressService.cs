@@ -1,21 +1,22 @@
-using AutoMapper;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
 using Unstore.DTOs;
+using Unstore.DTOs.Mapping;
 using Unstore.Models;
 
 namespace Unstore.Services.User;
 
 public class AddressService : BaseService
 {
-    public AddressService(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public AddressService(AppDbContext dbContext) : base(dbContext)
     {
     }
 
     public async Task<IServiceResult<List<UserAddressReadDto>>> GetAllAsync()
     {
         var addresses = await Context.Addresses.AsNoTracking().ToListAsync();
-        var dtos = Mapper.Map<List<UserAddressReadDto>>(addresses);
+        var dtos = addresses.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<UserAddressReadDto>>(true, dtos);
     }
 
@@ -29,7 +30,7 @@ public class AddressService : BaseService
         if (address == null)
             return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
 
-        var dto = Mapper.Map<UserAddressReadDto>(address);
+        var dto = address.MapToDto();
         return new DataServiceResult<UserAddressReadDto>(true, dto);
     }
 
@@ -43,7 +44,7 @@ public class AddressService : BaseService
             .Where(x => x.UserId == userId)
             .ToListAsync();
 
-        var dtos = Mapper.Map<List<UserAddressReadDto>>(addresses);
+        var dtos = addresses.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<UserAddressReadDto>>(true, dtos);
     }
 
@@ -60,12 +61,12 @@ public class AddressService : BaseService
         if (!typeExists)
             return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
 
-        var address = Mapper.Map<Address>(createDto);
+        var address = createDto.MapToModel();
 
         await Context.Addresses.AddAsync(address);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<UserAddressReadDto>(address);
+        var dto = address.MapToDto();
         return new DataServiceResult<UserAddressReadDto>(OperationStatus.Created, true, dto);
     }
 
@@ -79,18 +80,17 @@ public class AddressService : BaseService
         if (address == null)
             return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
 
-        if (updateDto.TypeId.HasValue & updateDto.TypeId > 0)
-        {
-            var typeExists = await Context.AddressTypes.AnyAsync(x => x.Id == updateDto.TypeId);
-            if (!typeExists)
-                return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
-        }
+        if (string.IsNullOrWhiteSpace(updateDto.AddressTypeKey))
+            return new DataServiceResult<UserAddressReadDto>(OperationStatus.InvalidInput, false);
+        
+        var typeExists = await Context.AddressTypes.AnyAsync(x => x.Key == updateDto.AddressTypeKey);
+        if (!typeExists)
+            return new DataServiceResult<UserAddressReadDto>(OperationStatus.NotFound, false);
 
-        Mapper.Map(updateDto, address);
+        address.MapFromUpdateDto(updateDto);
         Context.Addresses.Update(address);
         await Context.SaveChangesAsync();
-
-        var dto = Mapper.Map<UserAddressReadDto>(address);
+        var dto = address.MapToDto();
         return new DataServiceResult<UserAddressReadDto>(OperationStatus.Updated, true, dto);
     }
 

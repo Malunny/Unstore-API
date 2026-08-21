@@ -8,6 +8,8 @@ public record PurchaseReadDto
     [Required]
     public DateTime BoughtDate { get; set; }
     [Required]
+    public ICollection<ProductPurchaseReadDto> ProductsPurchases { get; set; } = new List<ProductPurchaseReadDto>();
+    [Required]
     public decimal TotalValue { get; set; }
     [Required]
     public int AddressId { get; set; }

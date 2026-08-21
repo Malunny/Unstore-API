@@ -1,4 +1,5 @@
-using AutoMapper;
+using System.Linq;
+using Unstore.DTOs.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
 using Unstore.DTOs;
@@ -8,7 +9,7 @@ namespace Unstore.Services.Service;
 
 public class ServiceService : BaseService
 {
-    public ServiceService(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public ServiceService(AppDbContext dbContext) : base(dbContext)
     {
     }
 
@@ -18,7 +19,7 @@ public class ServiceService : BaseService
             .AsNoTracking()
             .Where(x => x.Active)
             .ToListAsync();
-        var dtos = Mapper.Map<List<ServiceReadDto>>(services);
+        var dtos = services.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<ServiceReadDto>>(true, dtos);
     }
 
@@ -32,7 +33,7 @@ public class ServiceService : BaseService
         if (service == null)
             return new DataServiceResult<ServiceReadDto>(OperationStatus.NotFound, false);
 
-        var dto = Mapper.Map<ServiceReadDto>(service);
+        var dto = service.MapToDto();
         return new DataServiceResult<ServiceReadDto>(true, dto);
     }
 
@@ -46,7 +47,7 @@ public class ServiceService : BaseService
             .Where(x => x.ProviderId == providerId && x.Active)
             .ToListAsync();
 
-        var dtos = Mapper.Map<List<ServiceReadDto>>(services);
+        var dtos = services.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<ServiceReadDto>>(true, dtos);
     }
 
@@ -59,13 +60,13 @@ public class ServiceService : BaseService
         if (!providerExists)
             return new DataServiceResult<ServiceReadDto>(OperationStatus.NotFound, false);
 
-        var service = Mapper.Map<Models.Service>(createDto);
+        var service = createDto.MapToModel();
         service.Active = true;
 
         await Context.Services.AddAsync(service);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<ServiceReadDto>(service);
+        var dto = service.MapToDto();
         return new DataServiceResult<ServiceReadDto>(OperationStatus.Created, true, dto);
     }
 
@@ -79,11 +80,11 @@ public class ServiceService : BaseService
         if (service == null)
             return new DataServiceResult<ServiceReadDto>(OperationStatus.NotFound, false);
 
-        Mapper.Map(updateDto, service);
+        service.MapFromUpdateDto(updateDto);
         Context.Services.Update(service);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<ServiceReadDto>(service);
+        var dto = service.MapToDto();
         return new DataServiceResult<ServiceReadDto>(OperationStatus.Updated, true, dto);
     }
 

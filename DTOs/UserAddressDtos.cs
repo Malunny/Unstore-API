@@ -60,9 +60,9 @@ public record UserAddressCreateDto
     
     [Required(ErrorMessage = "Address Type ID is required")]
     public int TypeId { get; set; }
-    
-    [Required(ErrorMessage = "User ID is required")]
-    public int UserId { get; set; }
+    [Required(ErrorMessage = "Address Type is required")]
+    public string AddressTypeKey { get; set; }
+    public int? UserId { get; set; }
 }
 
 public record UserAddressUpdateDto
@@ -93,6 +93,6 @@ public record UserAddressUpdateDto
     [MaxLength(50, ErrorMessage = "Complement must not exceed 50 characters")]
     public string? Complement { get; set; }
     
-    public int? TypeId { get; set; }
+    public string? AddressTypeKey { get; set; }
 }
 

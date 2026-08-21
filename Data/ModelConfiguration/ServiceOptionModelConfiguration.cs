@@ -12,7 +12,7 @@ public class ServiceOptionModelConfiguration : IEntityTypeConfiguration<ServiceO
 
         builder.Property(x => x.Id)
             .IsRequired()
-            .UseAutoincrement();
+            .UseIdentityByDefaultColumn();
 
         builder.Property(x => x.Title)
             .HasMaxLength(100)

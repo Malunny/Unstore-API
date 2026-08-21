@@ -1,4 +1,5 @@
-using AutoMapper;
+using System.Linq;
+using Unstore.DTOs.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
 using Unstore.DTOs;
@@ -8,14 +9,14 @@ namespace Unstore.Services.Category;
 
 public class ProductCategoryService : BaseService
 {
-    public ProductCategoryService(AppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public ProductCategoryService(AppDbContext dbContext) : base(dbContext)
     {
     }
 
     public async Task<IServiceResult<List<ProductCategoryReadDto>>> GetAllAsync()
     {
         var categories = await Context.ProductCategories.AsNoTracking().ToListAsync();
-        var dtos = Mapper.Map<List<ProductCategoryReadDto>>(categories);
+        var dtos = categories.Select(x => x.MapToDto()).ToList();
         return new DataServiceResult<List<ProductCategoryReadDto>>(true, dtos);
     }
 
@@ -29,7 +30,7 @@ public class ProductCategoryService : BaseService
         if (category == null)
             return new DataServiceResult<ProductCategoryReadDto>(OperationStatus.NotFound, false);
 
-        var dto = Mapper.Map<ProductCategoryReadDto>(category);
+        var dto = category.MapToDto();
         return new DataServiceResult<ProductCategoryReadDto>(true, dto);
     }
 
@@ -42,12 +43,12 @@ public class ProductCategoryService : BaseService
         if (keyExists)
             return new DataServiceResult<ProductCategoryReadDto>(OperationStatus.ValidationError, false);
 
-        var category = Mapper.Map<ProductCategory>(createDto);
+        var category = createDto.MapToModel();
 
         await Context.ProductCategories.AddAsync(category);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<ProductCategoryReadDto>(category);
+        var dto = category.MapToDto();
         return new DataServiceResult<ProductCategoryReadDto>(OperationStatus.Created, true, dto);
     }
 
@@ -68,11 +69,11 @@ public class ProductCategoryService : BaseService
                 return new DataServiceResult<ProductCategoryReadDto>(OperationStatus.ValidationError, false);
         }
 
-        Mapper.Map(updateDto, category);
+        category.MapFromUpdateDto(updateDto);
         Context.ProductCategories.Update(category);
         await Context.SaveChangesAsync();
 
-        var dto = Mapper.Map<ProductCategoryReadDto>(category);
+        var dto = category.MapToDto();
         return new DataServiceResult<ProductCategoryReadDto>(OperationStatus.Updated, true, dto);
     }
 

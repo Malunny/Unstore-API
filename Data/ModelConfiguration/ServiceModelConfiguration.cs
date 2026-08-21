@@ -12,7 +12,7 @@ public class ServiceModelConfiguration : IEntityTypeConfiguration<Service>
         
         builder.Property(x => x.Id)
             .IsRequired()
-            .UseAutoincrement();
+            .UseIdentityByDefaultColumn();
 
         builder.Property(x => x.Description)
             .IsRequired()

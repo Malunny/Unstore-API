@@ -1,7 +1,8 @@
-using AutoMapper;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
 using Unstore.DTOs;
+using Unstore.DTOs.Mapping;
 using Unstore.Models;
 
 namespace Unstore.Services;
@@ -9,7 +10,7 @@ namespace Unstore.Services;
 public partial class UserService : BaseService
 {
     private readonly IServiceResultFactory _serviceResultFactory;
-    public UserService(AppDbContext dbContext, IMapper mapper, IServiceResultFactory serviceResultFactoryProvider) : base(dbContext, mapper)
+    public UserService(AppDbContext dbContext, IServiceResultFactory serviceResultFactoryProvider) : base(dbContext)
     {
         _serviceResultFactory = serviceResultFactoryProvider;
     }
@@ -19,7 +20,7 @@ public partial class UserService : BaseService
         if (Context.Users.Any(x => x.Email == createDto.Email || x.Username == createDto.Username))
             return _serviceResultFactory.Failure<UserCreateDtos>(OperationStatus.UserAlreadyExists);
 
-        var newUser = Mapper.Map<UserCreateDtos, Models.User>(createDto);
+        var newUser = createDto.MapToModel();
 
         await Context.Users.AddAsync(newUser);
         await Context.SaveChangesAsync();
@@ -36,7 +37,7 @@ public partial class UserService : BaseService
         if (usersUsernamesExists || usersEmailsExists)
             return _serviceResultFactory.Failure<IEnumerable<UserCreateDtos>>(OperationStatus.UserAlreadyExists);
 
-        IEnumerable<Models.User> newUsers = Mapper.Map<List<UserCreateDtos>, List<Models.User>>(createDtosList);
+        IEnumerable<Models.User> newUsers = createDtosList.Select(x => x.MapToModel()).ToList();
 
         await Context.Users.AddRangeAsync(newUsers);
         await Context.SaveChangesAsync();

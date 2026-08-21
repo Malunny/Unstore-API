@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Unstore.Data;
@@ -75,6 +76,12 @@ public class CommercialUserActionService([FromServices] AppDbContext context,
         if (commercialUser is null)
             return serviceResultFactory.Failure<ProductCreateDto>(OperationStatus.NotFound);
 
+        var existingCategoriesCount = await context.ProductCategories.CountAsync(category => dto.ProductCategories.Contains(category.Key));
+        var allDtoCategoriesExists = dto.ProductCategories.Count == existingCategoriesCount;
+        
+        if (!allDtoCategoriesExists)
+            return serviceResultFactory.Failure<ProductCreateDto>(OperationStatus.NotFound);
+        
         var product = dto.MapToModel(commercialUser.Id);
         
         await context.Products.AddAsync(product);

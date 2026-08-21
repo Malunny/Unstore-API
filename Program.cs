@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using Unstore.Mapper;
 using Unstore.Data;
 using Unstore.Services;
 using Unstore;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Unstore.Services.Account;
 using Unstore.Services.CommercialUser;
@@ -17,7 +17,11 @@ ConfigureKeysAndTokens();
 AddAuthentication();
 builder.Services.AddOpenApi();
 AddServices();
-ConfigureDbContext();
+string? dbConnectionString = builder.Configuration.GetConnectionString("UnstoredbCloud");
+builder.Services.AddDbContext<AppDbContext>((sp, options) =>
+{
+    options.UseNpgsql(dbConnectionString);
+});
 
 var app = builder.Build();
 
@@ -50,13 +54,9 @@ void AddServices()
     builder.Services.AddScoped<CommercialAccountService>();
     builder.Services.AddScoped<CommercialUserActionService>();
     builder.Services.AddScoped<UserVerificationService>();
-    builder.Services.AddScoped<AuthorizationService>();
     builder.Services.AddScoped<UserPurchaseService>();
     builder.Services.AddSingleton<IServiceResultFactory, DataServiceResultFactory>();
     builder.Services.AddTransient<ITokenService, JwtTokenService>();
-    
-    builder.Services.AddAutoMapper(typeof(MappingProfile));
-    
     builder.Services.AddMemoryCache();
     
     builder.Services
@@ -73,10 +73,6 @@ void ConfigureKeysAndTokens()
 {
     Configuration.JwtKey = builder.Configuration["JwtKey"]! as string;
     // Configuration.ApiKey = builder.Configuration["Api-Key"]! as string;
-}
-void ConfigureDbContext()
-{
-    builder.Services.AddDbContext<AppDbContext>();
 }
 void AddAuthentication()
 {
