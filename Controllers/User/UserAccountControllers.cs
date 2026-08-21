@@ -9,72 +9,98 @@ using Unstore.Services.Account;
 
 namespace Unstore.Controllers.User;
 
-public partial class UserController
+[Authorize]
+public class UserAccountController : UnstoreController
 {
-    [HttpPost("/login")]
+    [HttpPost]
     [AllowAnonymous]
-    public async Task<IActionResult> LoginAsync([FromBody] UserLoginDto userLoginDto,
+    public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto,
         [FromServices] AccountService accountService)
     {
-        if (!ModelState.IsValid)
-            return BadRequest();
-
         var serviceResult = await accountService.TryLoginAsync(userLoginDto);   
 
         return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
     }
 
-    [HttpPost("/register")]
+    [HttpPost]
     [AllowAnonymous]
-    public async Task<IActionResult> RegisterAsync([FromBody] UserCreateDtos registerDto,
+    public async Task<IActionResult> Register([FromBody] UserCreateDtos registerDto,
         [FromServices] AccountService accountService)
     {
-        if (!ModelState.IsValid)
-            return BadRequest();
-
         var serviceResult = await accountService.TryRegisterAsync(registerDto);
 
         return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
     }
 
-    [HttpPatch("v1/user/password")]
-    [AllowAnonymous]
-    public async Task<IActionResult> ChangePasswordAsync([FromBody] string newPassword,
-        [FromServices] AccountService accountService)
+    [HttpGet]
+    public async Task<IActionResult> OwnUser([FromServices] AccountService accountService)
     {
-        if (!ModelState.IsValid)
+        string? username = User?.Identity?.Name;
+        
+        if (username == null)
+            return BadRequest();
+
+        var serviceResult = await accountService.GetOwnUserAsync(username);
+        
+        return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> OwnAddresses([FromServices] AccountService accountService)
+    {
+        string? username = User?.Identity?.Name;
+        
+        if (username == null)
+            return BadRequest();
+
+        var serviceResult = await accountService.GetOwnAddressesAsync(username);
+        
+        return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddAddress([FromServices] AccountService accountService,
+        [FromBody] UserAddressCreateDto addressDto)
+    {
+        var username = User.Identity?.Name;
+
+        Console.WriteLine(username);
+        
+        if (username == null)
             return BadRequest();
         
+        var serviceResult = await accountService.AddAddressAsync(addressDto, addressDto.AddressTypeKey, username);
+        
+        return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
+    }
+
+    [HttpPatch]
+    public async Task<IActionResult> ChangePassword([FromBody] string newPassword,
+        [FromServices] AccountService accountService)
+    {
         var username = User.Identity?.Name;
         
         if (username == null)
-            return BadRequest("User not authenticated");
-        
-        var serviceResult = await accountService.ChangePasswordAsync(newPassword, username);
-
-        return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
-    }
-
-    [HttpPatch("v1/user/password/{username}")]
-    public async Task<IActionResult> ChangePasswordAsync([FromBody] string newPassword,
-        [FromHeader] string username,
-        [FromServices] AccountService accountService,
-        [FromServices] AuthorizationService authorizationService)
-    {
-        if (!ModelState.IsValid)
             return BadRequest();
         
-        if (!authorizationService.IsManagerOrAdmin(User))
-            return Unauthorized();
-
         var serviceResult = await accountService.ChangePasswordAsync(newPassword, username);
 
         return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
     }
 
-    [HttpPut("v1/user")]
-    [AllowAnonymous]
-    public async Task<IActionResult> UpdateAsync([FromBody] UserUpdateDto userUpdateDto,
+    [Authorize(Roles = "Administrator, Manager")]
+    [HttpPatch("{username}")]
+    public async Task<IActionResult> ChangePassword([FromBody] string newPassword,
+        [FromHeader] string username,
+        [FromServices] AccountService accountService)
+    {
+        var serviceResult = await accountService.ChangePasswordAsync(newPassword, username);
+
+        return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UserUpdateDto userUpdateDto,
         [FromServices] AccountService accountService)
     {
         var username = User.Identity?.Name;
@@ -86,10 +112,10 @@ public partial class UserController
         Console.WriteLine(serviceResult.OperationStatus.ToObjectResult(serviceResult.Data));
         return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
     }
-
-    [AllowAnonymous]
-    [HttpGet("v1/user")]
-    public IActionResult GetUsers([FromServices] AppDbContext db)
+    
+    [HttpGet]
+    [Authorize(Roles = "Administrator, Manager")]
+    public IActionResult Users([FromServices] AppDbContext db)
     {
         return Ok(db.Users.Include(x => x.Addresses)
             .Include(x => x.Roles).AsNoTracking());

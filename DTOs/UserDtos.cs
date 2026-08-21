@@ -33,7 +33,8 @@ public class UserReadDto
     public string Name { get; set; }
     public string Email { get; set; }
     public string Username { get; set; }
-    public string Roles { get; set; }
+    public ICollection<string> Roles { get; set; } = new List<string>();
+    public ICollection<UserAddressReadDto> Addresses { get; set; } = new List<UserAddressReadDto>();
 }
 public record UserLoginDto
 {

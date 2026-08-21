@@ -10,10 +10,10 @@ using Unstore.Services.User;
 namespace Unstore.Controllers.CommercialUser;
 
 [ApiController]
-public class CommercialUserActionsController : ControllerBase
+public class CommercialUserActionsController : UnstoreController
 {
-    [HttpPost("v1/commercial/products")]
-    public async Task<IActionResult> CreateProductAsync([FromBody] ProductCreateDto dto,
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] ProductCreateDto dto,
         [FromServices] CommercialUserActionService service)
     {
         var username = User.Identity?.Name;
@@ -26,8 +26,8 @@ public class CommercialUserActionsController : ControllerBase
         return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
     }
 
-    [HttpGet("v1/commercial/products")]
-    public async Task<IActionResult> GetProductsAsync([FromServices] CommercialUserActionService service)
+    [HttpGet]
+    public async Task<IActionResult> GetProducts([FromServices] CommercialUserActionService service)
     {
         var username = User.Identity?.Name;
 
@@ -39,8 +39,8 @@ public class CommercialUserActionsController : ControllerBase
         return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
     }
 
-    [HttpPut("v1/commercial/products")]
-    public async Task<IActionResult> UpdateProductAsync([FromBody] ProductUpdateDto dto,
+    [HttpPut("{productId}")]
+    public async Task<IActionResult> Update([FromBody] ProductUpdateDto dto,
         [FromServices] CommercialUserActionService service)
     {
         var username = User.Identity?.Name;
@@ -53,8 +53,8 @@ public class CommercialUserActionsController : ControllerBase
         return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
     }
 
-    [HttpPatch("v1/commercial/products/active/{productId:int}")]
-    public async Task<IActionResult> SwitchProductActiveAsync([FromRoute] int productId,
+    [HttpPatch("{productId}")]
+    public async Task<IActionResult> SwitchActive([FromRoute] int productId,
         [FromServices] CommercialUserActionService service,
         [FromServices] UserVerificationService userVerificationService)
     {
@@ -64,9 +64,8 @@ public class CommercialUserActionsController : ControllerBase
         
         return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
     }
-
-    [HttpDelete("v1/commercial/products/{productId:int}")]
-    public async Task<IActionResult> DeleteProductAsync(int productId,
+    [HttpDelete("{productId}")]
+    public async Task<IActionResult> Delete([FromRoute] int productId,
         [FromServices] CommercialUserActionService service)
     {
         var username = User.Identity?.Name;

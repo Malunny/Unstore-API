@@ -4,11 +4,10 @@ using Unstore.Services;
 
 namespace Unstore.Controllers.User;
 
-[ApiController]
 [Authorize]
-public class UserSocialController : ControllerBase
+public class UserSocialController : UnstoreController
 {
-    [HttpGet("v1/[controller]/[action]/{id:int}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> GetUserData([FromRoute] int id, [FromServices] UserService userService)
     {
         var result = await userService.GetByIdAsync(id);
@@ -16,7 +15,7 @@ public class UserSocialController : ControllerBase
         return result.OperationStatus.ToObjectResult(result.Data);
     }
     
-    [HttpGet("v1/[controller]/[action]")]
+    [HttpGet]
     public async Task<IActionResult> GetUsersData([FromQuery] int[] ids, [FromServices] UserService userService)
     {
         var result = await userService.GetByIdsAsync(ids);

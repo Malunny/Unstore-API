@@ -17,7 +17,7 @@ ConfigureKeysAndTokens();
 AddAuthentication();
 builder.Services.AddOpenApi();
 AddServices();
-string? dbConnectionString = builder.Configuration.GetConnectionString("unstore-db");
+string? dbConnectionString = builder.Configuration.GetConnectionString("UnstoredbCloud");
 builder.Services.AddDbContext<AppDbContext>((sp, options) =>
 {
     options.UseNpgsql(dbConnectionString);
@@ -71,8 +71,8 @@ void AddServices()
 }
 void ConfigureKeysAndTokens()
 {
-    Configuration.JwtKey = builder.Configuration["Jwt-Key"]! as string;
-    Configuration.ApiKey = builder.Configuration["Api-Key"]! as string;
+    Configuration.JwtKey = builder.Configuration["JwtKey"]! as string;
+    Configuration.ApiKey = builder.Configuration["ApiKey"]! as string;
 }
 void AddAuthentication()
 {
