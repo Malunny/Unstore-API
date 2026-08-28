@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="https://img.shields.io/badge/Unstore--API-8A2BE2?style=for-the-badge&logo=dotnet&logoColor=white" alt="Unstore API Logo" />
   
   # 🟪 Web Unstore
 
@@ -18,13 +17,14 @@
 
 ## 👾 About The Project
 > 🚧 **Project Status: Active Development (v0.2.0)**
-> This API is currently in its initial development phase, but some of its core functionalities are already in place. Features are actively being added, and the database schema is subject to structural changes prior to the `1.0.0` release.
+> Currently, I'm building the complete version( version 1.0.0), containing all the main needed features. All tips and ideas are welcome.  
 
+### The Api History
 **Unstore API** is a backend service designed to manage service providers and distributors businesses.
 Inspired by real-world operational challenges I observed while working 
 alongside my uncle, the project (whose name playfully nods to 'Uncle') aims to streamline store management, inventory, and service tracking.
 
-### Key Features
+### Present Key Features
 * **Feature 1:** Purchases System;
 * **Feature 2:** Product Management and Creation System;
 * **Feature 3:** Accounts and Roles System;
