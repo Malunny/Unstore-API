@@ -39,6 +39,7 @@ else
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.UseExceptionHandler();
 
 app.Run();
 
@@ -57,6 +58,7 @@ void AddServices()
     builder.Services.AddScoped<UserPurchaseService>();
     builder.Services.AddSingleton<IServiceResultFactory, DataServiceResultFactory>();
     builder.Services.AddTransient<ITokenService, JwtTokenService>();
+    builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
     builder.Services.AddMemoryCache();
     
     builder.Services
