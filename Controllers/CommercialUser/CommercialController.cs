@@ -10,13 +10,13 @@ using Unstore.Services.User;
 namespace Unstore.Controllers.CommercialUser;
 
 [ApiController]
-public class CommercialUserActionsController : UnstoreController
+public class CommercialController : UnstoreController
 {
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] ProductCreateDto dto,
-        [FromServices] CommercialUserActionService service)
+    public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDto dto,
+        [FromServices] CommercialService service)
     {
-        var username = User.Identity?.Name;
+        var username = GetRequestUser();
         
         if (string.IsNullOrEmpty(username))
             return Unauthorized("You are not logged in");
@@ -27,9 +27,9 @@ public class CommercialUserActionsController : UnstoreController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetProducts([FromServices] CommercialUserActionService service)
+    public async Task<IActionResult> GetProducts([FromServices] CommercialService service)
     {
-        var username = User.Identity?.Name;
+        var username = GetRequestUser();
 
         if (string.IsNullOrEmpty(username))
             return Unauthorized("You are not logged in");
@@ -41,7 +41,7 @@ public class CommercialUserActionsController : UnstoreController
 
     [HttpPut("{productId}")]
     public async Task<IActionResult> Update([FromBody] ProductUpdateDto dto,
-        [FromServices] CommercialUserActionService service)
+        [FromServices] CommercialService service)
     {
         var username = User.Identity?.Name;
 
@@ -53,20 +53,31 @@ public class CommercialUserActionsController : UnstoreController
         return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
     }
 
-    [HttpPatch("{productId}")]
-    public async Task<IActionResult> SwitchActive([FromRoute] int productId,
-        [FromServices] CommercialUserActionService service,
+    [HttpPatch("[controller]/[action]/{productId:int}")]
+    public async Task<IActionResult> InactivateProduct([FromRoute] int productId,
+        [FromServices] CommercialService service,
         [FromServices] UserVerificationService userVerificationService)
     {
         var username = User.Identity?.Name;
         
-        var serviceResult = await service.SwitchProductActiveAsync(productId, username);
+        var serviceResult = await service.InactivateProduct(productId, username);
+        
+        return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
+    }
+    [HttpPatch("[controller]/[action]/{productId:int}")]
+    public async Task<IActionResult> ActivateProduct([FromRoute] int productId,
+        [FromServices] CommercialService service,
+        [FromServices] UserVerificationService userVerificationService)
+    {
+        var username = User.Identity?.Name;
+        
+        var serviceResult = await service.ActivateProduct(productId, username);
         
         return serviceResult.OperationStatus.ToObjectResult(serviceResult.Data);
     }
     [HttpDelete("{productId}")]
-    public async Task<IActionResult> Delete([FromRoute] int productId,
-        [FromServices] CommercialUserActionService service)
+    public async Task<IActionResult> DeleteProduct([FromRoute] int productId,
+        [FromServices] CommercialService service)
     {
         var username = User.Identity?.Name;
 

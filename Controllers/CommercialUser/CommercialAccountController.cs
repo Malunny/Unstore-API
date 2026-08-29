@@ -8,13 +8,13 @@ using Unstore.Services.CommercialUser;
 namespace Unstore.Controllers.CommercialUser;
 
 [Authorize]
-public class CommercialUserAccountController : UnstoreController
+public class CommercialAccountController : UnstoreController
 {
    [HttpPost]
    public async Task<IActionResult> Register([FromServices] CommercialAccountService service,
       [FromBody] CommercialUserCreateDto dto)
    {
-      var username = User.Identity?.Name;
+      var username = GetRequestUser();
       
       if (username == null)
          return Unauthorized();
@@ -26,9 +26,9 @@ public class CommercialUserAccountController : UnstoreController
 
    [HttpGet]
    [Authorize(Roles = "Seller")]
-   public async Task<IActionResult> OwnCommercialInfo([FromServices] CommercialAccountService service)
+   public async Task<IActionResult> OwnInfo([FromServices] CommercialAccountService service)
    {
-      var username = User.Identity?.Name;
+      var username = GetRequestUser();
          
       if (username == null)
          return Unauthorized();

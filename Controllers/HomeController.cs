@@ -4,6 +4,8 @@ using Unstore.Services;
 
 namespace Unstore.Controllers;
 
+[ApiController]
+[Authorize(Roles = "ADM, Gerente")]
 public partial class HomeController : ControllerBase
 {
     [AllowAnonymous]

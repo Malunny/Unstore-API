@@ -17,7 +17,7 @@ public static class MainDependencyInjection
         services.AddScoped<ProductService>();
         services.AddScoped<AccountService>();
         services.AddScoped<CommercialAccountService>();
-        services.AddScoped<CommercialUserActionService>();
+        services.AddScoped<CommercialService>();
         services.AddScoped<UserVerificationService>();
         services.AddScoped<UserPurchaseService>();
         services.AddSingleton<IServiceResultFactory, DataServiceResultFactory>();

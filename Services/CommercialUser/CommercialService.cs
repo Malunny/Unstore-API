@@ -8,7 +8,7 @@ using Unstore.Services.User;
 
 namespace Unstore.Services.CommercialUser;
 
-public class CommercialUserActionService([FromServices] AppDbContext context,
+public class CommercialService([FromServices] AppDbContext context,
     [FromServices] IServiceResultFactory serviceResultFactory,
     [FromServices] UserVerificationService userVerificationService)
 {
@@ -111,7 +111,7 @@ public class CommercialUserActionService([FromServices] AppDbContext context,
         return serviceResultFactory.Success(data: dto, status: OperationStatus.Updated);
     }
 
-    public async Task<IServiceResult<bool>> SwitchProductActiveAsync(int productId, string? username)
+    public async Task<IServiceResult<bool>> InactivateProduct(int productId, string? username)
     {
         var userId = await userVerificationService.VerifyUserExistenceAsync(username);
 
@@ -125,7 +125,28 @@ public class CommercialUserActionService([FromServices] AppDbContext context,
         
         var product = productVerification.Data;
 
-        product!.Active = !product.Active;
+        product.Active = false;
+
+        await context.SaveChangesAsync();
+
+        return serviceResultFactory.Success(OperationStatus.Patched, true);
+    }
+    
+    public async Task<IServiceResult<bool>> ActivateProduct(int productId, string? username)
+    {
+        var userId = await userVerificationService.VerifyUserExistenceAsync(username);
+
+        if (userId == -1)
+            return serviceResultFactory.Failure<bool>(OperationStatus.InvalidCredentials);
+        
+        var productVerification = await VerifyProductOwnerAndExistence(productId, userId);
+        
+        if (productVerification.OperationStatus.IsBadResult())
+            return serviceResultFactory.Failure<bool>(productVerification.OperationStatus);
+        
+        var product = productVerification.Data;
+
+        product.Active = true;
 
         await context.SaveChangesAsync();
 

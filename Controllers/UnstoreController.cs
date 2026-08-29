@@ -20,4 +20,15 @@ public abstract class UnstoreController : ControllerBase
     //     
     //     return user;
     // }
+
+    [NonAction]
+    protected string? GetRequestUser()
+    {
+        string? username = User?.Identity?.Name;
+        
+        if (string.IsNullOrEmpty(username))
+            return null;
+        
+        return username;
+    }
 }
