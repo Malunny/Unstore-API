@@ -17,7 +17,6 @@ public class GlobalExceptionHandler : IExceptionHandler
         
         httpContext.Response.StatusCode = problemDetails.Status;
 
-        Console.WriteLine();
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
         
         return true;
