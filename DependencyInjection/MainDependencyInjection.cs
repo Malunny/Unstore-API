@@ -24,5 +24,15 @@ public static class MainDependencyInjection
         services.AddTransient<ITokenService, JwtTokenService>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddMemoryCache();
+        
+        services
+            .AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.WriteIndented = true;
+                options.JsonSerializerOptions.ReferenceHandler =
+                    System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+            })
+            .ConfigureApiBehaviorOptions(options => { options.SuppressModelStateInvalidFilter = true; });
     }
 }
