@@ -20,4 +20,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include=".ApiOrganization\Modelation\unstore_api_v1_design.drawio.xml" />
+    <None Include=".ApiOrganization\Modelation\unstore_api_v1_design.jpg" />
+  </ItemGroup>
+
 </Project>
