@@ -74,7 +74,7 @@ void AddServices()
 void ConfigureKeysAndTokens()
 {
     Configuration.JwtKey = builder.Configuration["JwtKey"]! as string;
-    Configuration.ApiKey = builder.Configuration["ApiKey"]! as string;
+    // Configuration.ApiKey = builder.Configuration["Api-Key"]! as string;
 }
 void AddAuthentication()
 {
