@@ -17,7 +17,7 @@
 ---
 
 ## 👾 About The Project
-> 🚧 **Project Status: Active Development (v0.2.1)**
+> 🚧 **Project Status: Active Development (v0.2.2)**
 > This API is currently in its initial development phase, but some of its core functionalities are already in place. Features are actively being added, and the database schema is subject to structural changes prior to the `1.0.0` release.
 
 **Unstore API** is a backend service designed to manage service providers and retail businesses.
