@@ -6,12 +6,12 @@ using Unstore.Services;
 namespace Unstore.Controllers.User;
 
 [Authorize]
-public class UserPurchaseController : UnstoreController
+public class PurchaseController : UnstoreController
 {
     [HttpGet]
-    public async Task<IActionResult> GetMyPurchases([FromServices] UserPurchaseService userPurchaseService)
+    public async Task<IActionResult> GetMine([FromServices] UserPurchaseService userPurchaseService)
     {
-        var username = User.Identity?.Name;
+        var username = GetRequestUser();
         
         if (username is null)
             return Unauthorized();
@@ -26,7 +26,7 @@ public class UserPurchaseController : UnstoreController
         [FromQuery] int addressId,
         [FromBody] ICollection<ProductPurchaseCreateDto> productPurchaseCreateDtos)
     {
-        var username = User?.Identity?.Name;
+        var username = GetRequestUser();
         
         var serviceResult = await userPurchaseService.AddPurchaseAsync(username, addressId, productPurchaseCreateDtos);
         

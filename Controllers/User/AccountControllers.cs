@@ -10,7 +10,7 @@ using Unstore.Services.Account;
 namespace Unstore.Controllers.User;
 
 [Authorize]
-public class UserAccountController : UnstoreController
+public class AccountController : UnstoreController
 {
     [HttpPost]
     [AllowAnonymous]
@@ -35,7 +35,7 @@ public class UserAccountController : UnstoreController
     [HttpGet]
     public async Task<IActionResult> OwnUser([FromServices] AccountService accountService)
     {
-        string? username = User?.Identity?.Name;
+        var username = GetRequestUser();
         
         if (username == null)
             return BadRequest();
@@ -48,7 +48,7 @@ public class UserAccountController : UnstoreController
     [HttpGet]
     public async Task<IActionResult> OwnAddresses([FromServices] AccountService accountService)
     {
-        string? username = User?.Identity?.Name;
+        string? username = GetRequestUser();
         
         if (username == null)
             return BadRequest();
@@ -62,9 +62,7 @@ public class UserAccountController : UnstoreController
     public async Task<IActionResult> AddAddress([FromServices] AccountService accountService,
         [FromBody] UserAddressCreateDto addressDto)
     {
-        var username = User.Identity?.Name;
-
-        Console.WriteLine(username);
+        var username = GetRequestUser();
         
         if (username == null)
             return BadRequest();
@@ -78,7 +76,7 @@ public class UserAccountController : UnstoreController
     public async Task<IActionResult> ChangePassword([FromBody] string newPassword,
         [FromServices] AccountService accountService)
     {
-        var username = User.Identity?.Name;
+        var username = GetRequestUser();
         
         if (username == null)
             return BadRequest();
@@ -103,7 +101,7 @@ public class UserAccountController : UnstoreController
     public async Task<IActionResult> Update([FromBody] UserUpdateDto userUpdateDto,
         [FromServices] AccountService accountService)
     {
-        var username = User.Identity?.Name;
+        var username = GetRequestUser();
         
         if (username == null)
             return Unauthorized();
