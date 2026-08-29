@@ -1,12 +1,11 @@
 <div align="center">
-  <img src="https://img.shields.io/badge/Unstore--API-8A2BE2?style=for-the-badge&logo=appveyor&logoColor=white" alt="Unstore API Logo" />
   
-  # 🟪 Unstore API
+  # 🟪 Web Unstore
 
   ![Status](https://img.shields.io/badge/status-Work_in_Progress-800080?style=for-the-badge)
   ![Version](https://img.shields.io/badge/version-0.2.0-8A2BE2?style=for-the-badge)
 
-  *A robust, scalable backend solution built with .NET.*
+  *An e-commerce API built on .NET*
   
   ![C#](https://img.shields.io/badge/C%23-4B0082?style=for-the-badge&logo=csharp&logoColor=white)
   ![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-800080?style=for-the-badge&logo=dotnet&logoColor=white)
@@ -20,14 +19,15 @@
 > 🚧 **Project Status: Active Development (v0.2.3)**
 > This API is currently in its initial development phase, but some of its core functionalities are already in place. Features are actively being added, and the database schema is subject to structural changes prior to the `1.0.0` release.
 
-**Unstore API** is a backend service designed to manage service providers and retail businesses.
+### The Api History
+**Unstore API** is a backend service designed to manage service providers and distributors businesses.
 Inspired by real-world operational challenges I observed while working 
 alongside my uncle, the project (whose name playfully nods to 'Uncle') aims to streamline store management, inventory, and service tracking.
 
-### Key Features
-* **Feature 1:** Creating and Purchasing Products (WIP);
-* **Feature 2:** Login and Register;
-* **Feature 3:** Account and Products Management;
+### Present Key Features
+* **Feature 1:** Purchases System;
+* **Feature 2:** Product Management and Creation System;
+* **Feature 3:** Accounts and Roles System;
 
 ---
 
@@ -43,14 +43,3 @@ This project was built utilizing the following technologies, carefully chosen to
 | **Postgres** | The main choice of Database for storing and getting data. |
 
 ---
-
-## ☂️ Getting Started
-
-Follow these instructions to set up the project locally for development and testing purposes.
-
-### Installation
-
-1. **Clone the repository**
-   ```sh
-   git clone https://github.com/Malunny/Unstore-API.git
-   ```
