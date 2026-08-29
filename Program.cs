@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Unstore.DependencyInjection;
 using Unstore.Services.Account;
 using Unstore.Services.CommercialUser;
 using Unstore.Services.Product;
@@ -13,15 +14,13 @@ using Unstore.Services.User;
 
 var builder = WebApplication.CreateBuilder(args);
 
-ConfigureKeysAndTokens();
-AddAuthentication();
+Configuration.JwtKey = builder.Configuration["JwtKey"]! as string;
+Configuration.ApiKey = builder.Configuration["ApiKey"]! as string;
+
+builder.Services.AddAuthenticationServices();
 builder.Services.AddOpenApi();
-AddServices();
-string? dbConnectionString = builder.Configuration.GetConnectionString("UnstoredbCloud");
-builder.Services.AddDbContext<AppDbContext>((sp, options) =>
-{
-    options.UseNpgsql(dbConnectionString);
-});
+builder.Services.AddMainServices();
+builder.Services.AddDatabaseServices(builder, true);
 
 var app = builder.Build();
 
@@ -41,6 +40,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.UseExceptionHandler();
 
+<<<<<<< Updated upstream
 app.Run();
 
 
@@ -94,3 +94,6 @@ void AddAuthentication()
         };
     });
 }
+=======
+app.Run();
+>>>>>>> Stashed changes
